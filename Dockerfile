@@ -22,8 +22,11 @@ FROM nginx:alpine
 # Vite outputs to /dist by default
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Copy the custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 3005
+EXPOSE 3005
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
