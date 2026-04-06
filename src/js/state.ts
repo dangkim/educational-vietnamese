@@ -38,6 +38,7 @@ export interface AppStateData {
     r2AccessKey: string;
     r2SecretKey: string;
     r2Bucket: string;
+    r2PublicDomain: string;
   };
   student: {
     name: string;
@@ -64,7 +65,7 @@ class StateManager {
       documentText: '',
       questions: { flashcards: [], wordle: [], memory: [], fillBlank: [], multipleChoice: [] }
     },
-    config: { geminiKey: '', r2AccountId: '', r2AccessKey: '', r2SecretKey: '', r2Bucket: '' },
+    config: { geminiKey: '', r2AccountId: '', r2AccessKey: '', r2SecretKey: '', r2Bucket: '', r2PublicDomain: '' },
     student: { name: '', answers: {}, completedGames: {} },
     currentSection: 0,
     currentVideo: 0,

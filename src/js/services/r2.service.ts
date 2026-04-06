@@ -16,12 +16,11 @@ export const R2Storage = {
     return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join(''); 
   },
 
-  async upload(data: any): Promise<boolean> {
+  async uploadToR2(key: string, data: any): Promise<boolean> {
     const { r2AccountId, r2AccessKey, r2SecretKey, r2Bucket } = AppState.get().config;
     if (!r2AccountId || !r2AccessKey || !r2SecretKey || !r2Bucket) throw new Error('R2 not configured');
 
     const body = JSON.stringify(data, null, 2);
-    const key = `answers/${Date.now()}-${(data.student||'unknown').replace(/\\s+/g,'-')}.json`;
     const host = `${r2AccountId}.r2.cloudflarestorage.com`;
     const region = 'auto';
     const service = 's3';
@@ -50,5 +49,17 @@ export const R2Storage = {
     });
     if (!resp.ok) throw new Error(`R2 upload failed: ${resp.status}`);
     return true;
+  },
+
+  async uploadAnswer(data: any): Promise<boolean> {
+    const key = `answers/${Date.now()}-${(data.student||'unknown').replace(/\s+/g,'-')}.json`;
+    return this.uploadToR2(key, data);
+  },
+
+  async uploadLesson(lessonData: any): Promise<string> {
+    const id = Math.random().toString(36).substring(2, 11);
+    const key = `lessons/${id}.json`;
+    await this.uploadToR2(key, lessonData);
+    return id;
   }
 };

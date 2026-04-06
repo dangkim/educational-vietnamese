@@ -263,7 +263,7 @@ export const StudentView = {
     if (s.config.r2AccountId && s.config.r2Bucket && s.config.r2AccessKey) {
       showToast('⏳ Đang nộp bài...', '', 10000);
       try {
-        await R2Storage.upload(data);
+        await R2Storage.uploadAnswer(data);
         showToast('✅ Nộp bài thành công!', 'success');
         showSuccess('🚀', 'Nộp bài thành công!', `${s.student.name} — bài làm đã được lưu!`, '⭐⭐⭐⭐⭐');
         return;

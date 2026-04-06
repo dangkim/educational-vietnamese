@@ -2,6 +2,7 @@ import { AppState, Questions } from '../state';
 import { StorageService } from '../services/storage.service';
 import { GeminiService } from '../services/gemini.service';
 import { qs, showToast, escHTML, confetti, showSuccess } from '../utils';
+import { R2Storage } from '../services/r2.service';
 import { Router } from '../router';
 
 export const TeacherView = {
@@ -35,6 +36,7 @@ export const TeacherView = {
       const r2AccessKey = qs<HTMLInputElement>('#r2-access-key'); if (r2AccessKey) r2AccessKey.value = s.config.r2AccessKey || '';
       const r2SecretKey = qs<HTMLInputElement>('#r2-secret-key'); if (r2SecretKey) r2SecretKey.value = s.config.r2SecretKey || '';
       const r2Bucket = qs<HTMLInputElement>('#r2-bucket'); if (r2Bucket) r2Bucket.value = s.config.r2Bucket || '';
+      const r2Public = qs<HTMLInputElement>('#r2-public-url'); if (r2Public) r2Public.value = s.config.r2PublicDomain || '';
     }, 50);
   },
 
@@ -261,7 +263,8 @@ export const TeacherView = {
         r2AccountId: qs<HTMLInputElement>('#r2-account')?.value?.trim() || '',
         r2AccessKey: qs<HTMLInputElement>('#r2-access-key')?.value?.trim() || '',
         r2SecretKey: qs<HTMLInputElement>('#r2-secret-key')?.value?.trim() || '',
-        r2Bucket: qs<HTMLInputElement>('#r2-bucket')?.value?.trim() || ''
+        r2Bucket: qs<HTMLInputElement>('#r2-bucket')?.value?.trim() || '',
+        r2PublicDomain: qs<HTMLInputElement>('#r2-public-url')?.value?.trim() || ''
       });
       if (!geminiKey) { showToast('Vui lòng nhập Gemini API Key!', 'error'); return false; }
     }
@@ -404,24 +407,51 @@ export const TeacherView = {
     const shortUrl = url.length > 2000 ? null : url;
     
     const count = Object.values(state.lesson.questions).reduce((a,b)=>a+(b?.length||0),0);
-    
-    showSuccess('🎉', 'Bài học sẵn sàng!', `
-      <div style="font-size:.9rem">
-        ${shortUrl ? `<p style="margin-bottom:8px">Link chia sẻ:</p><div style="background:#F5F5F5;border-radius:8px;padding:8px;font-size:.78rem;word-break:break-all;margin-bottom:12px;max-height:80px;overflow:auto">${escHTML(shortUrl)}</div>` : '<p>Bài học được lưu trong trình duyệt.</p>'}
-        <button id="btn-pub-start" style="background:var(--sky);color:white;padding:10px 24px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">🧒 Vào học ngay!</button>
-        ${shortUrl ? `<button id="btn-pub-copy" data-url="${escHTML(shortUrl)}" style="margin-left:8px;background:var(--mint);color:white;padding:10px 18px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">📋 Copy Link</button>` : ''}
-      </div>
-    `, `${count} câu hỏi`);
 
-    setTimeout(() => {
-      qs('#btn-pub-start')?.addEventListener('click', () => {
-        qs('#success-overlay')?.classList.add('hidden');
-        Router.navigate('student');
+    const showPublishSuccess = (finalUrl: string, isShort = false) => {
+      showSuccess('🎉', 'Bài học sẵn sàng!', `
+        <div style="font-size:.9rem">
+          <p style="margin-bottom:8px">${isShort ? '🚀 Link rút gọn (R2):' : '🔗 Link chia sẻ (Dài):'}</p>
+          <div style="background:#F5F5F5;border-radius:8px;padding:8px;font-size:.78rem;word-break:break-all;margin-bottom:12px;max-height:80px;overflow:auto">${escHTML(finalUrl)}</div>
+          <button id="btn-pub-start" style="background:var(--sky);color:white;padding:10px 24px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">🧒 Vào học ngay!</button>
+          <button id="btn-pub-copy" data-url="${escHTML(finalUrl)}" style="margin-left:8px;background:var(--mint);color:white;padding:10px 18px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">📋 Copy Link</button>
+        </div>
+      `, `${count} câu hỏi`);
+
+      setTimeout(() => {
+        qs('#btn-pub-start')?.addEventListener('click', () => {
+          qs('#success-overlay')?.classList.add('hidden');
+          Router.navigate('student');
+        });
+        qs('#btn-pub-copy')?.addEventListener('click', (e) => {
+          navigator.clipboard.writeText((e.currentTarget as HTMLElement).dataset.url!);
+          showToast('Đã copy!','success');
+        });
+      }, 100);
+    };
+
+    // Try R2 upload if configured
+    if (state.config.r2AccountId && state.config.r2Bucket && state.config.r2AccessKey && state.config.r2SecretKey) {
+      showToast('⏳ Đang lưu bài học lên R2...', '', 5000);
+      R2Storage.uploadLesson(state.lesson).then(id => {
+        // Extract domain part from https://pub-xxx.r2.dev
+        let domain = state.config.r2PublicDomain || '';
+        if (domain.includes('://')) {
+          domain = new URL(domain).hostname;
+        }
+        // If it's a pub-xxx.r2.dev, we'll keep the whole hostname
+        // Router will handle it correctly if we simplify the check there too
+
+        const shortHash = `r2:${domain}:${id}`;
+        const shortUrl = `${location.origin}${location.pathname}#${shortHash}`;
+        showPublishSuccess(shortUrl, true);
+      }).catch(err => {
+        console.error('R2 lesson upload failed', err);
+        showToast('⚠️ Lỗi R2, dùng link dài thay thế...', 'error');
+        showPublishSuccess(url);
       });
-      qs('#btn-pub-copy')?.addEventListener('click', (e) => {
-        navigator.clipboard.writeText((e.currentTarget as HTMLElement).dataset.url!);
-        showToast('Đã copy!','success');
-      });
-    }, 100);
+    } else {
+      showPublishSuccess(url);
+    }
   }
 };

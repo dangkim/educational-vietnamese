@@ -27,15 +27,43 @@ export const Router = {
 
   loadFromURL() {
     const hash = window.location.hash.slice(1);
-    if (hash) {
-      const lesson = fromBase64<any>(hash);
-      if (lesson) {
-        AppState.updateLesson(lesson);
-        localStorage.setItem('eduplay-lesson', hash);
-        this.navigate('student');
-        return;
-      }
+    if (!hash) return;
+
+    if (hash.startsWith('r2:')) {
+      this.loadFromR2(hash);
+      return;
     }
-    showToast('Không tìm thấy bài học trong link!', 'error');
+
+    const lesson = fromBase64<any>(hash);
+    if (lesson) {
+      AppState.updateLesson(lesson);
+      localStorage.setItem('eduplay-lesson', hash);
+      this.navigate('student');
+    } else {
+      showToast('Không tìm thấy bài học trong link!', 'error');
+    }
+  },
+
+  async loadFromR2(hash: string) {
+    const parts = hash.split(':');
+    if (parts.length < 3) return;
+    const domain = parts[1];
+    const lessonId = parts[2];
+    
+    // Use domain directly as it's extracted correctly in TeacherView
+    const url = `https://${domain}/lessons/${lessonId}.json`;
+
+    showToast('⏳ Đang tải bài học từ R2...', '', 10000);
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error();
+      const lesson = await resp.json();
+      AppState.updateLesson(lesson);
+      localStorage.setItem('eduplay-lesson', btoa(JSON.stringify(lesson))); // Optional: backup as base64
+      this.navigate('student');
+      showToast('✅ Tải bài học thành công!', 'success');
+    } catch (e) {
+      showToast('❌ Không thể tải bài học từ R2. Hãy kiểm tra lại Public URL và CORS!', 'error', 5000);
+    }
   }
 };
