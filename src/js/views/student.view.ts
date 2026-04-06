@@ -70,6 +70,19 @@ export const StudentView = {
     if (!sec) return; // Safegaurd
     const iEl = qs('#curr-section-icon'); if (iEl) iEl.textContent = sec.icon;
     const nEl = qs('#curr-section-name'); if (nEl) nEl.textContent = sec.name;
+
+    const lw = qs<HTMLElement>('#lecture-wrapper');
+    if (lw) {
+      if (sec.lecture && sec.lecture.trim()) {
+        // Simple line break support
+        lw.innerHTML = escHTML(sec.lecture).replace(/\n/g, '<br>');
+        lw.style.display = 'block';
+      } else {
+        lw.style.display = 'none';
+        lw.innerHTML = '';
+      }
+    }
+
     this.renderVideo();
   },
 
@@ -83,11 +96,16 @@ export const StudentView = {
     
     if (!wrapper || !controls || !dots) return;
 
+    const vc = qs<HTMLElement>('#video-carousel-container');
+
     if (!videos.length) {
-      wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">🎬</span><span>Chưa có video cho phần này</span></div>`;
+      if (vc) vc.style.display = (sec.lecture && sec.lecture.trim()) ? 'none' : '';
+      wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">🎬</span><span>Chưa có nội dung đa phương tiện cho phần này</span></div>`;
       controls.style.display = 'none';
       return;
     }
+    
+    if (vc) vc.style.display = '';
     
     const idx = state.currentVideo;
     const url = getYTEmbedUrl(videos[idx]);

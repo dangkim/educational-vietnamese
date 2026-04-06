@@ -65,6 +65,23 @@ export const TeacherView = {
 
     qs('#btn-gen')?.addEventListener('click', () => this.generateQuestions());
     qs('.btn-regen')?.addEventListener('click', () => this.generateQuestions());
+
+    qs('#btn-pull-lectures')?.addEventListener('click', () => {
+      const lectures = AppState.get().lesson.sections
+        .map(sec => sec.lecture?.trim())
+        .filter(l => l)
+        .join('\n\n');
+      if (!lectures) {
+        showToast('Chưa có nội dung bài giảng ở Bước 2!', 'error');
+        return;
+      }
+      const el = qs<HTMLTextAreaElement>('#doc-text');
+      if (el) {
+        el.value = lectures;
+        AppState.updateLesson({ documentText: lectures });
+        showToast('Đã lấy nội dung từ các phần bài giảng!', 'success');
+      }
+    });
   },
 
   renderStepper() {
@@ -106,6 +123,10 @@ export const TeacherView = {
           <span style="margin-left:8px">⌄</span>
         </div>
         <div class="section-body hidden" id="sec-body-${idx}">
+          <div class="form-group" style="padding: 12px; background: #fff; border-radius: 8px; margin-bottom: 12px; border: 1px solid #eee;">
+            <label class="form-label" style="font-size: 0.9rem;">📝 Bài giảng (Văn bản)</label>
+            <textarea class="form-input lecture-input" data-sec="${idx}" rows="3" placeholder="Nhập nội dung bài giảng cho phần này...">${escHTML(sec.lecture || '')}</textarea>
+          </div>
           <div id="vid-list-${idx}">
             ${(sec.videos||[]).map((v,vi) => this.renderVideoItem(idx, vi, v)).join('')}
           </div>
@@ -132,6 +153,18 @@ export const TeacherView = {
         this.removeVideo(parseInt(t.dataset.sec!), parseInt(t.dataset.vid!));
       });
     });
+    el.querySelectorAll('.lecture-input').forEach(inp => {
+      inp.addEventListener('change', (e) => {
+        const t = e.target as HTMLTextAreaElement;
+        this.updateLecture(parseInt(t.dataset.sec!), t.value);
+      });
+    });
+  },
+
+  updateLecture(secIdx: number, val: string) {
+    const s = AppState.get().lesson;
+    s.sections[secIdx].lecture = val;
+    AppState.updateLesson({ sections: s.sections });
   },
 
   renderVideoItem(secIdx: number, vidIdx: number, val='') {

@@ -101,6 +101,9 @@
       </div>
       <input type="file" id="doc-file-input" accept=".txt,.pdf,.md,.doc,.docx" style="display:none">
       <div style="text-align:center;margin:16px 0;font-weight:700;color:var(--muted)">— hoặc —</div>
+      <div style="text-align:center;margin-bottom:16px">
+        <button class="btn-next" id="btn-pull-lectures" style="font-size:0.85rem;padding:8px 16px;background:var(--mint);border:none;box-shadow:0 4px 10px rgba(76,175,80,0.2)">📋 Lấy nội dung từ Bài giảng (Bước 2)</button>
+      </div>
       <div class="form-group">
         <label class="form-label">Dán nội dung tài liệu trực tiếp</label>
         <textarea class="form-input" id="doc-text" rows="10" placeholder="Dán nội dung bài học vào đây...&#10;&#10;VD: Chương 5: Thế giới động vật&#10;5.1 Định nghĩa&#10;Động vật là..."></textarea>
@@ -211,7 +214,8 @@
       <span id="curr-section-icon">🎬</span>
       <span id="curr-section-name">Mở bài</span>
     </div>
-    <div class="video-carousel">
+    <div id="lecture-wrapper" style="display:none;background:var(--white);padding:24px;border-radius:16px;margin-bottom:20px;font-size:1.1rem;line-height:1.7;color:var(--dark);white-space:pre-wrap;box-shadow:0 4px 12px rgba(0,0,0,0.05);border:1px solid #eee;"></div>
+    <div class="video-carousel" id="video-carousel-container">
       <div id="video-wrapper" class="video-wrapper"></div>
       <div class="video-controls" id="video-controls" style="display:none">
         <button class="video-nav-btn" id="vid-prev">◀ Trước</button>

@@ -4,6 +4,7 @@ export interface LessonSection {
   icon: string;
   color: string;
   videos: string[];
+  lecture?: string;
   completed: boolean;
 }
 
