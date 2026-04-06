@@ -1,0 +1,11 @@
+@import './variables.css';
+@import './base.css';
+@import './components.css';
+@import './views/home.css';
+@import './views/teacher.css';
+@import './views/student.css';
+@import './games/flashcard.css';
+@import './games/wordle.css';
+@import './games/memory.css';
+@import './games/fillblank.css';
+@import './games/mcq.css';

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduPlay 🌟 — Lớp Học Vui Vẻ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="logo-big">🌟 EduPlay</div>
+  <div class="sub">Lớp Học Vui Vẻ</div>
+  <div class="dots" style="margin-top:20px">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== HOME VIEW ========== -->
+<div id="view-home" class="hidden">
+  <div class="home-hero">
+    <div class="home-logo">🌟 EduPlay</div>
+    <p class="home-tagline">Học vui — Dạy hay — Tương tác mỗi ngày!</p>
+    <div class="home-decorations">
+      <span>📚</span><span>🎮</span><span>🏆</span><span>✨</span>
+    </div>
+  </div>
+  <div class="home-cards">
+    <div class="home-card teacher-card" id="btn-enter-teacher">
+      <div class="home-card-icon">👩‍🏫</div>
+      <h2>Giáo Viên</h2>
+      <p>Soạn bài & tạo câu hỏi với AI</p>
+    </div>
+    <div class="home-card student-card" id="btn-enter-student">
+      <div class="home-card-icon">🧒</div>
+      <h2>Học Sinh</h2>
+      <p>Học bài & chơi game vui vẻ</p>
+    </div>
+  </div>
+  <div id="home-load-lesson" style="margin-top:24px;text-align:center;display:none">
+    <button class="btn-next" id="btn-load-lesson" style="font-size:.9rem;padding:10px 24px">📎 Mở bài học từ link</button>
+  </div>
+</div>
+
+<!-- ========== TEACHER VIEW ========== -->
+<div id="view-teacher" class="hidden">
+  <div class="top-nav">
+    <div class="nav-logo">🌟 <span>EduPlay</span></div>
+    <div class="nav-title" id="teacher-nav-title">Tạo Bài Học Mới</div>
+    <button class="nav-back btn-go-home">← Về trang chủ</button>
+  </div>
+  
+  <!-- Stepper -->
+  <div class="stepper" id="stepper"></div>
+  
+  <!-- Wizard Body -->
+  <div class="wizard-body">
+    <!-- Step 1: Lesson Info -->
+    <div id="step-1" class="wizard-card hidden">
+      <h2>📝 Thông Tin Bài Học</h2>
+      <p class="subtitle">Bước 1 / 5 — Điền thông tin cơ bản cho bài giảng</p>
+      <div class="form-group">
+        <label class="form-label">Tên bài học *</label>
+        <input class="form-input" id="lesson-title" placeholder="VD: Bài 5 — Thế giới động vật" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Môn học</label>
+        <input class="form-input" id="lesson-subject" placeholder="VD: Khoa học tự nhiên" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lớp / Khối</label>
+        <input class="form-input" id="lesson-grade" placeholder="VD: Lớp 4" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mô tả ngắn</label>
+        <textarea class="form-input" id="lesson-desc" rows="2" placeholder="VD: Tìm hiểu về các loài động vật hoang dã..."></textarea>
+      </div>
+    </div>
+    
+    <!-- Step 2: Videos -->
+    <div id="step-2" class="wizard-card hidden">
+      <h2>🎬 Video Bài Giảng</h2>
+      <p class="subtitle">Bước 2 / 5 — Thêm video YouTube/URL cho từng phần bài giảng</p>
+      <p class="form-hint" style="margin-bottom:16px">💡 Hỗ trợ link YouTube, Google Drive (dạng embed), hoặc link video trực tiếp</p>
+      <div id="sections-container"></div>
+    </div>
+    
+    <!-- Step 3: Document -->
+    <div id="step-3" class="wizard-card hidden">
+      <h2>📄 Tài Liệu Bài Học</h2>
+      <p class="subtitle">Bước 3 / 5 — Upload hoặc dán nội dung tài liệu để AI sinh câu hỏi</p>
+      <div id="doc-drop-area" class="doc-drop">
+        <div class="doc-drop-icon">📂</div>
+        <p>Kéo thả file hoặc <u id="doc-drop-trigger">bấm để chọn file</u></p>
+        <small>Hỗ trợ: .txt, .pdf (text), .doc nội dung text</small>
+      </div>
+      <input type="file" id="doc-file-input" accept=".txt,.pdf,.md,.doc,.docx" style="display:none">
+      <div style="text-align:center;margin:16px 0;font-weight:700;color:var(--muted)">— hoặc —</div>
+      <div class="form-group">
+        <label class="form-label">Dán nội dung tài liệu trực tiếp</label>
+        <textarea class="form-input" id="doc-text" rows="10" placeholder="Dán nội dung bài học vào đây...&#10;&#10;VD: Chương 5: Thế giới động vật&#10;5.1 Định nghĩa&#10;Động vật là..."></textarea>
+      </div>
+      <div id="doc-preview-section" class="hidden">
+        <label class="form-label">📋 Nội dung đã tải (xem trước)</label>
+        <div class="doc-preview" id="doc-preview-text"></div>
+      </div>
+    </div>
+    
+    <!-- Step 4: API Settings -->
+    <div id="step-4" class="wizard-card hidden">
+      <h2>⚙️ Cài Đặt AI & Lưu Trữ</h2>
+      <p class="subtitle">Bước 4 / 5 — Cấu hình API Gemini và Cloudflare R2</p>
+      
+      <div class="api-info">
+        <p>🤖 <strong>Gemini API (Miễn phí)</strong> — Lấy API key tại <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>. Free 1500 requests/ngày với Gemini 2.0 Flash!</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gemini API Key *</label>
+        <div class="input-wrap">
+          <input class="form-input" id="gemini-key" type="password" placeholder="AIza..." />
+          <button class="eye-btn" data-target="gemini-key">👁️</button>
+        </div>
+      </div>
+      
+      <div style="margin:24px 0;border-top:2px solid #F5F5F5;padding-top:24px">
+        <div class="api-info" style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9)">
+          <p>☁️ <strong>Cloudflare R2 (Tùy chọn)</strong> — Lưu bài làm học sinh. Bỏ trống nếu chỉ muốn download JSON.</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">R2 Account ID</label>
+        <input class="form-input" id="r2-account" placeholder="abc123..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">R2 Access Key ID</label>
+        <div class="input-wrap">
+          <input class="form-input" id="r2-access-key" type="password" placeholder="Access Key..." />
+          <button class="eye-btn" data-target="r2-access-key">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">R2 Secret Access Key</label>
+        <div class="input-wrap">
+          <input class="form-input" id="r2-secret-key" type="password" placeholder="Secret Key..." />
+          <button class="eye-btn" data-target="r2-secret-key">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">R2 Bucket Name</label>
+        <input class="form-input" id="r2-bucket" placeholder="eduplay-answers" />
+      </div>
+      <p class="form-hint">💡 Cần bật CORS trên R2 bucket để web app có thể upload trực tiếp từ browser.</p>
+    </div>
+    
+    <!-- Step 5: Generate & Preview -->
+    <div id="step-5" class="wizard-card hidden">
+      <h2>🤖 Tạo Câu Hỏi với AI</h2>
+      <p class="subtitle">Bước 5 / 5 — Gemini AI sẽ tạo 5 dạng bài tập từ tài liệu của bạn</p>
+      
+      <div class="generate-area">
+        <button class="btn-generate" id="btn-gen">
+          ✨ Bắt Đầu Tạo Câu Hỏi
+        </button>
+        <div id="gen-status" class="generating-status hidden">
+          <div class="spinner"></div>
+          <span id="gen-status-text">Đang kết nối với Gemini AI...</span>
+        </div>
+      </div>
+      
+      <div id="questions-preview" class="hidden" style="margin-top:24px">
+        <h3 style="font-size:1.1rem;color:var(--dark);margin-bottom:16px">📋 Xem trước câu hỏi đã tạo</h3>
+        <div class="q-preview-tabs" id="preview-tabs"></div>
+        <div class="preview-list" id="preview-content"></div>
+        
+        <div style="margin-top:24px;text-align:center">
+          <button class="btn-generate btn-regen" style="font-size:1rem;padding:12px 28px">🔄 Tạo lại</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Nav -->
+    <div class="wizard-nav" id="wizard-nav">
+      <button class="btn-prev" id="btn-prev">← Quay lại</button>
+      <button class="btn-next" id="btn-next">Tiếp theo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== STUDENT VIEW ========== -->
+<div id="view-student" class="hidden">
+  <div class="top-nav">
+    <div class="nav-logo">🌟 <span>EduPlay</span></div>
+    <div class="nav-title" id="student-lesson-title">Đang tải bài học...</div>
+    <button class="nav-back btn-go-home">← Thoát</button>
+  </div>
+  
+  <div class="lesson-hero">
+    <h1 id="hero-title">Bài Học Hôm Nay</h1>
+    <p id="hero-desc">Cùng học và khám phá nhé! 🎉</p>
+  </div>
+  
+  <div class="section-nav" id="section-nav"></div>
+  
+  <div class="video-section">
+    <div class="video-section-title">
+      <span id="curr-section-icon">🎬</span>
+      <span id="curr-section-name">Mở bài</span>
+    </div>
+    <div class="video-carousel">
+      <div id="video-wrapper" class="video-wrapper"></div>
+      <div class="video-controls" id="video-controls" style="display:none">
+        <button class="video-nav-btn" id="vid-prev">◀ Trước</button>
+        <div class="video-dots" id="video-dots"></div>
+        <button class="video-nav-btn" id="vid-next">Tiếp ▶</button>
+      </div>
+    </div>
+    <div class="section-complete-bar">
+      <button class="btn-complete-section" id="btn-complete-section">
+        ✅ Xem xong — Phần tiếp theo!
+      </button>
+    </div>
+  </div>
+  
+  <!-- Activities -->
+  <div class="activities-section hidden" id="activities-section">
+    <div class="activities-header">
+      <h2>🎮 Chọn Bài Tập</h2>
+      <p>Chọn một hoặc nhiều dạng bài để luyện tập nhé!</p>
+    </div>
+    
+    <div class="student-name-row">
+      <label>👤 Tên học sinh:</label>
+      <input id="student-name" placeholder="Nhập tên của bạn..." />
+    </div>
+    
+    <div class="game-grid" id="game-grid"></div>
+    
+    <div id="game-container" class="hidden"></div>
+    
+    <div class="submit-row">
+      <button class="btn-download" id="btn-download-answers">⬇️ Tải về JSON</button>
+      <button class="btn-submit" id="btn-submit-answers">🚀 Nộp Bài</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="success-overlay" class="success-overlay hidden">
+  <div class="success-card">
+    <div class="success-icon" id="success-icon">🏆</div>
+    <h2 id="success-title">Xuất sắc!</h2>
+    <p id="success-msg">Bạn đã hoàn thành bài tập!</p>
+    <div class="score-display" id="success-score"></div>
+    <button class="btn-next" id="btn-success-continue" style="margin-top:8px">Tiếp tục 🎉</button>
+  </div>
+</div>
+
+<script type="module" src="/src/js/app.ts"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+/* ========== LOADING ========== */
+#loading {
+  position: fixed; inset: 0; background: linear-gradient(135deg,#1A237E,#4A148C,#006064);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; transition: opacity .5s ease;
+}
+#loading .logo-big { font-family:'Fredoka One',cursive; font-size: 3.5rem; color:#fff; text-shadow: 0 4px 20px rgba(255,213,79,.5); }
+#loading .sub { color: rgba(255,255,255,.7); margin-top: 8px; font-size: 1.1rem; }
+#loading .dots span { display:inline-block; width:10px;height:10px;border-radius:50%;background:#FFD54F; margin:0 4px; animation:bounce .8s ease infinite; }
+#loading .dots span:nth-child(2){ animation-delay:.15s; }
+#loading .dots span:nth-child(3){ animation-delay:.3s; }
+
+/* ========== TOAST ========== */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--dark); color: white; padding: 14px 24px; border-radius: 50px;
+  font-weight: 700; font-size: .9rem; box-shadow: var(--shadow-lg); z-index: 1000;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1); white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--coral); }
+.toast.success { background: var(--mint); }
+
+/* ========== TOP NAV ========== */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+  border-bottom: 2px solid rgba(255,255,255,.5);
+  padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+.nav-logo { font-family:'Fredoka One',cursive; font-size: 1.4rem; color: var(--dark); }
+.nav-logo span { font-size:1.2rem; }
+.nav-title { font-weight: 800; color: var(--text); font-size: .95rem; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-back { background: none; color: var(--muted); font-weight: 700; font-size: .9rem; padding: 8px 16px; border-radius: 20px; transition: background var(--trans); }
+.nav-back:hover { background: #eee; }
+
+/* ========== SUCCESS / CONFETTI ========== */
+.success-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+}
+.success-card {
+  background: white; border-radius: 28px; padding: 48px 40px; text-align: center;
+  box-shadow: var(--shadow-lg); max-width: 420px; width: 90%; animation: slideUp .4s cubic-bezier(.34,1.56,.64,1);
+}
+.success-icon { font-size: 4rem; margin-bottom: 16px; animation: starPop .5s ease; }
+.success-card h2 { font-size: 2rem; color: var(--dark); margin-bottom: 8px; }
+.success-card p { color: var(--muted); font-weight: 600; margin-bottom: 24px; }
+.score-display { font-family:'Fredoka One',cursive; font-size: 3rem; color: var(--mint); margin: 16px 0; }
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px; border-radius: 2px;
+  animation: confettiFall linear forwards; pointer-events: none; z-index: 600;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+.empty-state p { font-weight: 700; font-size: 1rem; }

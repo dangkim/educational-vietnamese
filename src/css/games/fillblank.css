@@ -1,0 +1,21 @@
+/* ========== FILL BLANK GAME ========== */
+.fill-stage { display: flex; flex-direction: column; gap: 20px; }
+.fill-item { background: #F8F9FA; border-radius: var(--radius-sm); padding: 20px; border-left: 4px solid var(--orange); }
+.fill-item-num { font-size: .78rem; font-weight: 800; color: var(--orange); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.fill-sentence { font-size: 1.05rem; font-weight: 600; color: var(--dark); line-height: 1.8; }
+.fill-input-inline {
+  display: inline-block; border: none; border-bottom: 2.5px solid var(--orange);
+  padding: 2px 8px; font-family: inherit; font-size: 1rem; font-weight: 700;
+  color: var(--purple); background: transparent; min-width: 80px; text-align: center;
+  transition: border-color var(--trans);
+}
+.fill-input-inline:focus { border-color: var(--purple); outline: none; }
+.fill-input-inline.correct { border-color: var(--mint); color: var(--mint); }
+.fill-input-inline.wrong { border-color: var(--coral); color: var(--coral); }
+.fill-hint { font-size: .8rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+.fill-check-row { display: flex; justify-content: center; margin-top: 20px; }
+.btn-check { background: var(--orange); color: white; border-radius: 12px; padding: 12px 28px; font-weight: 800; font-size: .95rem; transition: all var(--trans); }
+.btn-check:hover { background: #E65100; }
+.fill-result { margin-top: 12px; font-weight: 700; text-align: center; padding: 10px; border-radius: 8px; }
+.fill-result.good { background: var(--mint-light); color: var(--mint); }
+.fill-result.bad { background: var(--coral-light); color: var(--coral); }

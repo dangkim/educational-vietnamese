@@ -1,0 +1,96 @@
+/* ========== STUDENT VIEW ========== */
+#view-student { min-height: 100vh; }
+.lesson-hero {
+  background: linear-gradient(135deg,#1A237E 0%,#283593 40%,#1565C0 100%);
+  padding: 32px 24px; color: white; text-align: center;
+}
+.lesson-hero h1 { font-size: clamp(1.5rem,4vw,2.5rem); margin-bottom: 8px; }
+.lesson-hero p { opacity: .8; font-weight: 600; }
+
+/* Section navigator */
+.section-nav {
+  background: white; padding: 16px 24px; display: flex; gap: 12px; overflow-x: auto;
+  border-bottom: 2px solid #EEEEEE; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.section-tab {
+  padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: .875rem;
+  cursor: pointer; white-space: nowrap; border: 2px solid transparent;
+  transition: all var(--trans); background: #F5F5F5; color: var(--muted);
+}
+.section-tab.active { background: var(--dark); color: white; }
+.section-tab.completed { border-color: var(--mint); color: var(--mint); background: var(--mint-light); }
+
+/* Video player */
+.video-section { max-width: 900px; margin: 24px auto; padding: 0 20px; }
+.video-section-title { font-size: 1.2rem; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.video-carousel { position: relative; }
+.video-wrapper { border-radius: var(--radius); overflow: hidden; background: #000; box-shadow: var(--shadow); aspect-ratio: 16/9; }
+.video-wrapper iframe, .video-wrapper video { width: 100%; height: 100%; border: none; }
+.video-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.video-dots { display: flex; gap: 8px; }
+.video-dot { width: 10px; height: 10px; border-radius: 50%; background: #E0E0E0; cursor: pointer; transition: background var(--trans); }
+.video-dot.active { background: var(--dark); }
+.video-nav-btn { background: white; border: 2px solid #E0E0E0; border-radius: 10px; padding: 8px 16px; font-weight: 700; font-size: .875rem; color: var(--text); transition: all var(--trans); }
+.video-nav-btn:hover { border-color: var(--dark); }
+.video-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
+.no-video-placeholder { aspect-ratio: 16/9; background: linear-gradient(135deg,#263238,#37474F); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-direction: column; color: rgba(255,255,255,.6); font-weight: 700; gap: 12px; font-size: 1.1rem; }
+
+/* Section complete btn */
+.section-complete-bar { display: flex; justify-content: center; margin: 20px 0; }
+.btn-complete-section {
+  background: linear-gradient(135deg,var(--mint),#00897B); color: white;
+  padding: 12px 28px; border-radius: 50px; font-weight: 800; font-size: .95rem;
+  box-shadow: 0 4px 16px rgba(67,160,71,.3); transition: all var(--trans);
+}
+.btn-complete-section:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(67,160,71,.4); }
+
+/* Activities section */
+.activities-section { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
+.activities-header { text-align: center; margin-bottom: 28px; }
+.activities-header h2 { font-size: 1.8rem; color: var(--dark); margin-bottom: 8px; }
+.activities-header p { color: var(--muted); font-weight: 600; }
+
+.student-name-row { display: flex; align-items: center; gap: 12px; background: white; border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); margin-bottom: 24px; }
+.student-name-row label { font-weight: 700; color: var(--text); flex-shrink: 0; }
+.student-name-row input { flex: 1; border: 2px solid #E0E0E0; border-radius: 8px; padding: 10px 14px; font-size: .95rem; font-family: inherit; transition: border-color var(--trans); }
+.student-name-row input:focus { border-color: var(--sky); }
+
+/* Game selector */
+.game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.game-btn {
+  background: white; border-radius: var(--radius); padding: 24px 16px; text-align: center;
+  cursor: pointer; box-shadow: var(--shadow); border: 3px solid transparent;
+  transition: all var(--trans); position: relative; overflow: hidden;
+}
+.game-btn::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity var(--trans); }
+.game-btn:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.game-btn.active { border-color: var(--sun); }
+.game-btn.flashcard-btn::before { background: linear-gradient(135deg,var(--sky-light),#E3F2FD); }
+.game-btn.wordle-btn::before { background: linear-gradient(135deg,var(--mint-light),#F1F8E9); }
+.game-btn.memory-btn::before { background: linear-gradient(135deg,var(--purple-light),#EDE7F6); }
+.game-btn.fillblank-btn::before { background: linear-gradient(135deg,var(--orange-light),#FFF8E1); }
+.game-btn.mcq-btn::before { background: linear-gradient(135deg,var(--pink-light),#FCE4EC); }
+.game-btn.active::before { opacity: 1; }
+.game-btn-content { position: relative; z-index: 1; }
+.game-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.game-label { font-family:'Fredoka One',cursive; font-size: 1rem; color: var(--dark); }
+.game-sub { font-size: .78rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
+.game-badge { position: absolute; top: 10px; right: 10px; background: var(--mint); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: .75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+
+/* ========== GAME CONTAINER ========== */
+.game-container { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; min-height: 400px; animation: fadeIn .4s ease; }
+.game-header { padding: 20px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #F5F5F5; }
+.game-header h3 { font-size: 1.3rem; color: var(--dark); }
+.game-progress { margin-left: auto; font-size: .875rem; font-weight: 700; color: var(--muted); }
+.game-body { padding: 24px; }
+
+/* Submit row */
+.submit-row { display: flex; justify-content: center; gap: 16px; margin-top: 32px; flex-wrap: wrap; }
+.btn-submit {
+  background: linear-gradient(135deg,#E91E63,#C2185B); color: white;
+  padding: 16px 36px; border-radius: 50px; font-family:'Fredoka One',cursive; font-size: 1.2rem;
+  box-shadow: 0 6px 20px rgba(233,30,99,.35); transition: all var(--trans);
+}
+.btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(233,30,99,.45); }
+.btn-download { background: white; border: 2px solid var(--muted); color: var(--text); padding: 16px 28px; border-radius: 50px; font-weight: 800; font-size: .95rem; transition: all var(--trans); }
+.btn-download:hover { border-color: var(--text); }
