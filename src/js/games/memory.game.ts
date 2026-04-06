@@ -50,15 +50,18 @@ export const MemoryGame = {
   renderGrid() {
     const grid = qs('#mem-grid');
     if (!grid) return;
-    const cardH = Math.min(90, Math.max(60, 480 / Math.ceil(this.cards.length/4)));
-    grid.innerHTML = this.cards.map((card, idx) => `
-      <div class="mem-card-wrap" style="aspect-ratio:1;height:${cardH}px" data-idx="${idx}">
-        <div class="mem-card ${this.flipped.includes(idx)||this.matched.includes(card.pairId)?'flipped':''} ${this.matched.includes(card.pairId)?'matched':''}" id="mc-${idx}">
-          <div class="mem-card-face mem-card-back-face"></div>
-          <div class="mem-card-face mem-card-front-face" style="font-size:${card.text.length>10?'.72rem':'.85rem'}">${escHTML(card.text)}</div>
+    grid.innerHTML = this.cards.map((card, idx) => {
+      const isFlipped = this.flipped.includes(idx) || this.matched.includes(card.pairId);
+      const isMatched = this.matched.includes(card.pairId);
+      const fontSize = card.text.length > 20 ? '.65rem' : card.text.length > 10 ? '.72rem' : '.85rem';
+      return `
+      <div class="mem-card-wrap" data-idx="${idx}">
+        <div class="mem-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" id="mc-${idx}">
+          <div class="mem-card-face mem-card-back-face"><div class="mem-card-back-inner"></div></div>
+          <div class="mem-card-face mem-card-front-face" style="font-size:${fontSize}">${escHTML(card.text)}</div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
     grid.querySelectorAll('.mem-card-wrap').forEach(wrap => {
       wrap.addEventListener('click', (e) => this.flip(parseInt((e.currentTarget as HTMLElement).dataset.idx!, 10)));
