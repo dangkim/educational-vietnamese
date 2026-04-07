@@ -11,20 +11,24 @@ import { FillBlankGame } from '../games/fillblank.game';
 import { MCQGame } from '../games/mcq.game';
 
 export const StudentView = {
+  initialized: false,
+
   init() {
+    if (!this.initialized) {
+      this.bindEvents();
+      this.initialized = true;
+    }
+
     const lesson = AppState.get().lesson;
     const sName = qs<HTMLInputElement>('#student-name');
     if (sName) {
       sName.value = AppState.get().student.name;
-      sName.addEventListener('change', (e) => AppState.updateLesson({}, 'student_name')); // Wait, actually update student
-      sName.addEventListener('change', (e) => AppState.set({ student: { ...AppState.get().student, name: (e.target as HTMLInputElement).value } }));
     }
 
     const t = qs('#hero-title'); if (t) t.textContent = lesson.title || 'Bài Học Hôm Nay';
     const d = qs('#hero-desc'); if (d) d.textContent = lesson.description || `${lesson.subject || ''} ${lesson.grade || ''} — Cùng học và khám phá nhé! 🎉`.trim();
     const l = qs('#student-lesson-title'); if (l) l.textContent = lesson.title || 'Bài Học';
     
-    this.bindEvents();
     this.renderSectionNav();
     this.showSection(0);
     this.renderGameGrid();
@@ -36,6 +40,11 @@ export const StudentView = {
     qs('#vid-next')?.addEventListener('click', () => this.nextVideo());
     qs('#btn-download-answers')?.addEventListener('click', () => this.downloadAnswers());
     qs('#btn-submit-answers')?.addEventListener('click', () => this.submitAnswers());
+
+    qs('#student-name')?.addEventListener('change', (e) => {
+      const val = (e.target as HTMLInputElement).value;
+      AppState.set({ student: { ...AppState.get().student, name: val } });
+    });
   },
 
   renderSectionNav() {

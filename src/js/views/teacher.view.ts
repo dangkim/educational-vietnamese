@@ -10,32 +10,43 @@ export const TeacherView = {
   totalSteps: 5,
   stepNames: ['Thông tin', 'Đa phương tiện', 'Tài liệu', 'Cài đặt', 'Tạo câu hỏi'],
   previewTab: 'flashcards',
+  initialized: false,
 
-  init() {
-    StorageService.loadTeacherState();
+  init(skipLoad = false) {
+    if (!this.initialized) {
+      this.renderLibraryButton();
+      this.bindEvents();
+      this.initialized = true;
+    }
+    
+    if (!skipLoad) {
+      StorageService.loadTeacherState();
+    }
+    
     this.renderStepper();
-    this.renderLibraryButton();
     this.renderSections();
     this.showStep(1);
-    this.bindEvents();
+    this.restoreFormValues();
+  },
+
+  restoreFormValues() {
+    const s = AppState.get();
+    ['title','subject','grade'].forEach(f => {
+      const el = qs<HTMLInputElement>(`#lesson-${f}`);
+      if (el) el.value = (s.lesson as any)[f] || '';
+    });
+    const desc = qs<HTMLTextAreaElement>('#lesson-desc');
+    if (desc) desc.value = s.lesson.description || '';
+    const docText = qs<HTMLTextAreaElement>('#doc-text');
+    if (docText) docText.value = s.lesson.documentText || '';
+    const gemKey = qs<HTMLInputElement>('#gemini-key');
+    if (gemKey) gemKey.value = s.config.geminiKey || '';
     
-    // Restore form values
-    setTimeout(() => {
-      const s = AppState.get();
-      ['title','subject','grade'].forEach(f => {
-        const el = qs<HTMLInputElement>(`#lesson-${f}`);
-        if (el) el.value = (s.lesson as any)[f] || '';
-      });
-      const desc = qs<HTMLTextAreaElement>('#lesson-desc');
-      if (desc) desc.value = s.lesson.description || '';
-      const docText = qs<HTMLTextAreaElement>('#doc-text');
-      if (docText) docText.value = s.lesson.documentText || '';
-      const gemKey = qs<HTMLInputElement>('#gemini-key');
-      if (gemKey) gemKey.value = s.config.geminiKey || '';
-      
-      const teacherId = qs<HTMLInputElement>('#teacher-id');
-      if (teacherId) teacherId.value = s.config.teacherId || '';
-    }, 50);
+    const teacherId = qs<HTMLInputElement>('#teacher-id');
+    if (teacherId) teacherId.value = s.config.teacherId || '';
+    
+    const tNav = qs('#teacher-nav-title');
+    if (tNav) tNav.textContent = s.lesson.title || 'Tạo Bài Học Mới';
   },
 
   bindEvents() {
@@ -708,14 +719,55 @@ export const TeacherView = {
   async loadDraft(id: string) {
     showToast('⏳ Đang tải bài học...', '', 5000);
     try {
-      const lesson = await R2Storage.fetchLesson(id);
-      if (lesson) {
-        AppState.updateLesson(lesson);
-        // Refresh UI
-        this.init();
+      const resp = await R2Storage.fetchLesson(id);
+      if (resp) {
+        // Handle both flat and nested structures
+        const lessonData = resp.lesson || resp;
+        
+        // Ensure the ID is maintained
+        if (!lessonData.id) lessonData.id = id;
+
+        // Perform a complete replacement of the lesson state
+        AppState.setLesson(lessonData);
+        
+        // Sync to localStorage immediately
+        StorageService.saveTeacherState();
+        
+        // Refresh all UI components
+        this.currentStep = 1;
+        
+        // Full re-initialization of the view state
+        this.renderStepper();
+        this.renderSections();
+        this.showStep(1);
+        this.restoreFormValues();
+        
+        // Refresh preview if questions exist
+        if (lessonData.questions) {
+          const qList = lessonData.questions;
+          const hasQ = Object.values(qList).some(v => Array.isArray(v) && v.length > 0);
+          if (hasQ) {
+            this.renderPreview(qList);
+          } else {
+            qs('#questions-preview')?.classList.add('hidden');
+          }
+        } else {
+          qs('#questions-preview')?.classList.add('hidden');
+        }
+
+        // Update nav title explicitly
+        const tNav = qs('#teacher-nav-title');
+        if (tNav) tNav.textContent = lessonData.title || 'Tạo Bài Học Mới';
+        
         showToast('✅ Đã tải bài học thành công!', 'success');
+        
+        // Final sync check
+        setTimeout(() => this.restoreFormValues(), 150);
+      } else {
+        showToast('❌ Không tìm thấy dữ liệu bài học!', 'error');
       }
     } catch(e: any) {
+      console.error('loadDraft error:', e);
       showToast('❌ Lỗi tải bài học: ' + e.message, 'error');
     }
   }

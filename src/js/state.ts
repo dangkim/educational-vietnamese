@@ -82,6 +82,11 @@ class StateManager {
     if (eventName) this.emit(eventName);
   }
 
+  setLesson(lesson: AppStateData['lesson']) {
+    this.state.lesson = { ...lesson };
+    this.emit('lesson-updated');
+  }
+
   updateLesson(updates: Partial<AppStateData['lesson']>, eventName?: string) {
     this.state.lesson = { ...this.state.lesson, ...updates };
     if (eventName) this.emit(eventName);
