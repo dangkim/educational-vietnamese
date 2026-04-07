@@ -177,7 +177,6 @@ export const TeacherView = {
           <input class="section-name-input" data-idx="${idx}" value="${escHTML(sec.name)}" style="font-weight:800; border:none; background:transparent; font-family:inherit; font-size:1rem; color:var(--dark); width:150px;" />
           <span style="margin-left:auto;color:var(--muted);font-size:.85rem">${(sec.videos||[]).filter(v=>v).length} video, ${(sec.images||[]).filter(i=>i).length} ảnh</span>
           <button class="btn-icon danger btn-del-section" data-idx="${idx}" style="margin-left:12px; font-size:1rem;">✕</button>
-          <span class="toggle-icon" style="margin-left:8px; cursor:pointer;">⌄</span>
         </div>
         <div class="section-body hidden" id="sec-body-${idx}">
           <div class="form-group" style="padding: 12px; background: #fff; border-radius: 8px; margin-bottom: 12px; border: 1px solid #eee;">
@@ -206,10 +205,9 @@ export const TeacherView = {
 
     el.innerHTML = html;
 
-    el.querySelectorAll('.toggle-icon').forEach(icon => {
-      icon.addEventListener('click', (e) => {
-        const header = (e.currentTarget as HTMLElement).closest('.section-header');
-        header?.nextElementSibling?.classList.toggle('hidden');
+    el.querySelectorAll('.section-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.nextElementSibling?.classList.toggle('hidden');
       });
     });
     
@@ -576,7 +574,7 @@ export const TeacherView = {
     const showPublishSuccess = (finalUrl: string, isShort = false) => {
       showSuccess('🎉', 'Bài học sẵn sàng!', `
         <div style="font-size:.9rem">
-          <p style="margin-bottom:8px">${isShort ? '🚀 Link rút gọn (R2):' : '🔗 Link chia sẻ (Dài):'}</p>
+          <p style="margin-bottom:8px">${isShort ? '🚀 Link rút gọn:' : '🔗 Link chia sẻ (Dài):'}</p>
           <div style="background:#F5F5F5;border-radius:8px;padding:8px;font-size:.78rem;word-break:break-all;margin-bottom:12px;max-height:80px;overflow:auto">${escHTML(finalUrl)}</div>
           <button id="btn-pub-start" style="background:var(--sky);color:white;padding:10px 24px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">🧒 Vào học ngay!</button>
           <button id="btn-pub-copy" data-url="${escHTML(finalUrl)}" style="margin-left:8px;background:var(--mint);color:white;padding:10px 18px;border-radius:12px;font-weight:800;cursor:pointer;border:none;font-family:inherit">📋 Copy Link</button>
@@ -599,7 +597,7 @@ export const TeacherView = {
     const r2Bucket = import.meta.env.VITE_R2_BUCKET;
     const r2Configured = import.meta.env.VITE_R2_ACCOUNT_ID && r2Bucket && import.meta.env.VITE_R2_ACCESS_KEY && import.meta.env.VITE_R2_SECRET_KEY;
     if (r2Configured) {
-      showToast('⏳ Đang lưu bài học lên R2...', '', 5000);
+      showToast('⏳ Đang lưu bài học...', '', 5000);
       R2Storage.uploadLesson(state.lesson).then(id => {
         // Extract domain part from https://pub-xxx.r2.dev
         let domain = import.meta.env.VITE_R2_PUBLIC_DOMAIN || '';
@@ -614,7 +612,7 @@ export const TeacherView = {
         showPublishSuccess(shortUrl, true);
       }).catch(err => {
         console.error('R2 lesson upload failed', err);
-        showToast('⚠️ Lỗi R2, dùng link dài thay thế...', 'error');
+        showToast('⚠️ Lỗi hệ thống, dùng link dài thay thế...', 'error');
         showPublishSuccess(url);
       });
     } else {
@@ -656,7 +654,7 @@ export const TeacherView = {
     
     if (!this.ensureTeacherId()) return;
     
-    showToast('⏳ Đang lưu bản nháp lên R2...', '', 5000);
+    showToast('⏳ Đang lưu bản nháp...', '', 5000);
     try {
       await R2Storage.saveLessonDraft(state.lesson);
       showToast('✅ Đã lưu bản nháp!', 'success');

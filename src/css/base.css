@@ -1,7 +1,18 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-h1,h2,h3 { font-family: 'Fredoka One', cursive; letter-spacing: .5px; }
+html { scroll-behavior: smooth; font-size: var(--fs-base); }
+body { 
+  font-family: var(--font-main); 
+  background: var(--bg); 
+  color: var(--text); 
+  min-height: 100vh; 
+  overflow-x: hidden; 
+  line-height: 1.6;
+  font-size: var(--fs-body);
+}
+h1,h2,h3 { font-family: var(--font-header); letter-spacing: .5px; font-weight: 600; }
+h1 { font-size: var(--fs-h1); margin-top: 1.5rem; margin-bottom: 1rem; }
+h2 { font-size: var(--fs-h2); margin-top: 1.2rem; margin-bottom: 0.8rem; }
+h3 { font-size: var(--fs-h3); margin-top: 1rem; margin-bottom: 0.6rem; }
 button { cursor: pointer; font-family: inherit; border: none; outline: none; }
 input, textarea, select { font-family: inherit; outline: none; }
 a { color: inherit; }

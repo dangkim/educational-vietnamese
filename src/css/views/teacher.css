@@ -45,8 +45,9 @@ textarea.form-input { resize: vertical; min-height: 120px; }
 }
 .section-header {
   padding: 14px 20px; display: flex; align-items: center; gap: 12px;
-  cursor: pointer; user-select: none;
+  cursor: pointer; user-select: none; transition: background-color var(--trans);
 }
+.section-header:hover { background-color: #FAFAFA; }
 .section-badge { 
   width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: .85rem; color: white; flex-shrink: 0;

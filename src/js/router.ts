@@ -53,7 +53,7 @@ export const Router = {
     // Use domain directly as it's extracted correctly in TeacherView
     const url = `https://${domain}/lessons/${lessonId}.json`;
 
-    showToast('⏳ Đang tải bài học từ R2...', '', 10000);
+    showToast('⏳ Đang tải bài học...', '', 10000);
     try {
       const resp = await fetch(url);
       if (!resp.ok) throw new Error();
@@ -63,7 +63,7 @@ export const Router = {
       this.navigate('student');
       showToast('✅ Tải bài học thành công!', 'success');
     } catch (e) {
-      showToast('❌ Không thể tải bài học từ R2. Hãy kiểm tra lại Public URL và CORS!', 'error', 5000);
+      showToast('❌ Không thể tải bài học. Hãy kiểm tra lại kết nối mạng!', 'error', 5000);
     }
   }
 };

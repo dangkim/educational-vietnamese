@@ -4,6 +4,8 @@ import { qs, escHTML, showToast, showSuccess } from '../utils';
 
 export const MCQGame = {
   selected: {} as Record<number, number>,
+  answered: new Set<number>(),
+  correctCount: 0,
   checked: false,
 
   init(container: Element) {
@@ -12,7 +14,7 @@ export const MCQGame = {
       container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Chưa có câu trắc nghiệm nào!</p></div>';
       return;
     }
-    this.selected = {}; this.checked = false;
+    this.selected = {}; this.checked = false; this.answered.clear(); this.correctCount = 0;
     const letters = ['A','B','C','D'];
     
     container.innerHTML = `
@@ -38,8 +40,8 @@ export const MCQGame = {
               <div class="mcq-explanation" id="mcq-exp-${idx}">💡 ${escHTML(item.explanation||'')}</div>
             </div>
           `).join('')}
-          <div class="mcq-submit-row">
-            <button class="btn-mcq-submit" id="btn-mcq-check">📋 Nộp trắc nghiệm</button>
+          <div class="mcq-submit-row hidden" id="mcq-final-row">
+            <button class="btn-mcq-submit" id="btn-mcq-check">🎉 Hoàn thành bài trắc nghiệm!</button>
           </div>
         </div>
       </div>
@@ -56,38 +58,54 @@ export const MCQGame = {
   },
 
   select(qIdx: number, optIdx: number) {
-    if (this.checked) return;
+    if (this.answered.has(qIdx)) return;
+    
+    const items = AppState.get().lesson.questions.multipleChoice || [];
+    const item = items[qIdx];
     this.selected[qIdx] = optIdx;
+    this.answered.add(qIdx);
+    
     const opts = document.querySelectorAll(`#mcq-opts-${qIdx} .mcq-option`);
-    opts.forEach((o, i) => o.classList.toggle('selected', i === optIdx));
+    const isCorrect = optIdx === item.correct;
+    
+    if (isCorrect) this.correctCount++;
+    
+    opts.forEach((o, i) => {
+      if (i === optIdx) {
+        o.classList.add(isCorrect ? 'correct-ans' : 'wrong-ans');
+      } else if (i === item.correct) {
+        o.classList.add('correct-ans');
+      }
+      (o as HTMLElement).style.pointerEvents = 'none';
+      if (i !== optIdx && i !== item.correct) (o as HTMLElement).style.opacity = '0.6';
+    });
+    
+    const expEl = qs(`#mcq-exp-${qIdx}`);
+    if (expEl) expEl.classList.add('show');
+    
+    // Check if all answered
+    if (this.answered.size === items.length) {
+      setTimeout(() => this.checkAll(), 800);
+    }
   },
 
   checkAll() {
+    if (this.checked) return;
     const items = AppState.get().lesson.questions.multipleChoice || [];
-    let correct = 0;
     this.checked = true;
-    const results: any[] = [];
     
-    items.forEach((item, idx) => {
-      const selected = this.selected[idx];
-      const opts = document.querySelectorAll(`#mcq-opts-${idx} .mcq-option`);
-      opts.forEach((o, oi) => {
-        o.classList.remove('selected');
-        if (oi === item.correct) o.classList.add('correct-ans');
-        else if (oi === selected && selected !== item.correct) o.classList.add('wrong-ans');
-      });
-      const expEl = qs(`#mcq-exp-${idx}`);
-      if (expEl) expEl.classList.add('show');
-      const isRight = selected === item.correct;
-      if (isRight) correct++;
-      results.push({ q: item.question, selected, correct: item.correct, isRight });
-    });
+    const results = items.map((item, idx) => ({
+      q: item.question,
+      selected: this.selected[idx],
+      correct: item.correct,
+      isRight: this.selected[idx] === item.correct
+    }));
     
-    StudentView.saveAnswer('multipleChoice', { score: correct, total: items.length, results });
-    const pct = Math.round(correct/items.length*100);
+    StudentView.saveAnswer('multipleChoice', { score: this.correctCount, total: items.length, results });
+    const pct = Math.round(this.correctCount/items.length*100);
     
-    if (pct === 100) showSuccess('🏆', 'Xuất sắc!', 'Trả lời đúng tất cả câu hỏi!', `${correct}/${items.length} câu đúng`);
-    else if (pct >= 70) showSuccess('⭐', 'Giỏi lắm!', `Điểm của bạn`, `${correct}/${items.length} câu đúng`);
-    else showToast(`💪 Cố gắng hơn nhé! ${correct}/${items.length} câu đúng`);
+    if (pct === 100) showSuccess('🏆', 'Xuất sắc!', 'Trả lời đúng tất cả câu hỏi!', `${this.correctCount}/${items.length} câu đúng`);
+    else if (pct >= 70) showSuccess('⭐', 'Giỏi lắm!', `Điểm của bạn`, `${this.correctCount}/${items.length} câu đúng`);
+    else showToast(`💪 Cố gắng hơn nhé! ${this.correctCount}/${items.length} câu đúng`);
   }
 };

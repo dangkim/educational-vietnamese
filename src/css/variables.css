@@ -11,4 +11,13 @@
   --radius: 18px; --radius-sm: 10px;
   --shadow: 0 8px 30px rgba(0,0,0,.12); --shadow-lg: 0 16px 48px rgba(0,0,0,.18);
   --trans: .25s cubic-bezier(.4,0,.2,1);
+
+  /* TYPOGRAPHY */
+  --font-main: 'Be Vietnam Pro', sans-serif;
+  --font-header: 'Fredoka', cursive;
+  --fs-base: 20px;
+  --fs-h1: 3rem;
+  --fs-h2: 2.2rem;
+  --fs-h3: 1.8rem;
+  --fs-body: 1.2rem;
 }

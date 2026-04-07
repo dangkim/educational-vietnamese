@@ -277,7 +277,7 @@ export const StudentView = {
         showSuccess('🚀', 'Nộp bài thành công!', `${s.student.name} — bài làm đã được lưu!`, '⭐⭐⭐⭐⭐');
         return;
       } catch(e) {
-        showToast('⚠️ Không thể lên R2, tải file thay thế...', 'error', 4000);
+        showToast('⚠️ Không thể nộp bài trực tuyến, tải file thay thế...', 'error', 4000);
       }
     }
 

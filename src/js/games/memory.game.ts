@@ -6,11 +6,16 @@ export const MemoryGame = {
   cards: [] as any[], flipped: [] as number[], matched: [] as number[], moves: 0, timer: null as any, seconds: 0, isPeek: false, peekTime: 10,
 
   init(container: Element) {
-    const pairs = AppState.get().lesson.questions.memory || [];
-    if (!pairs.length) {
+    const rawPairs = AppState.get().lesson.questions.memory || [];
+    if (!rawPairs.length) {
       container.innerHTML = '<div class="empty-state"><div class="icon">🧩</div><p>Chưa có cặp Memory nào!</p></div>';
       return;
     }
+    
+    // Choose 6 pairs for 4x3 layout (12 cards)
+    const shuffledPairs = [...rawPairs].sort(() => Math.random() - .5);
+    const pairs = shuffledPairs.slice(0, 6);
+
     const deck: any[] = [];
     pairs.forEach((p, i) => {
       deck.push({ id: i*2, pairId: i, text: p.cardA, type:'A' });
@@ -74,7 +79,7 @@ export const MemoryGame = {
     grid.innerHTML = this.cards.map((card, idx) => {
       const isFlipped = this.isPeek || this.flipped.includes(idx) || this.matched.includes(card.pairId);
       const isMatched = this.matched.includes(card.pairId);
-      const fontSize = card.text.length > 20 ? '.65rem' : card.text.length > 10 ? '.72rem' : '.85rem';
+      const fontSize = card.text.length > 20 ? '.95rem' : card.text.length > 10 ? '1.2rem' : '1.5rem';
       return `
       <div class="mem-card-wrap" data-idx="${idx}">
         <div class="mem-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" id="mc-${idx}">
@@ -108,7 +113,7 @@ export const MemoryGame = {
         setTimeout(() => {
           qs(`#mc-${a}`)?.classList.add('matched');
           qs(`#mc-${b}`)?.classList.add('matched');
-          const pairs = AppState.get().lesson.questions.memory.length;
+          const pairs = this.cards.length / 2;
           const matchEl = qs('#mem-matches'); if (matchEl) matchEl.textContent = `${this.matched.length}/${pairs}`;
           const progEl = qs('#mem-progress'); if (progEl) progEl.textContent = `${this.matched.length}/${pairs}`;
           if (this.matched.length === pairs) {
