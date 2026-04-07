@@ -4,6 +4,7 @@ export interface LessonSection {
   icon: string;
   color: string;
   videos: string[];
+  images: string[];
   lecture?: string;
   completed: boolean;
 }
@@ -57,10 +58,10 @@ class StateManager {
     lesson: {
       title: '', subject: '', grade: '', description: '',
       sections: [
-        { id: 's1', name: 'Mở bài', icon: '🚀', color: '#1565C0', videos: [], completed: false },
-        { id: 's2', name: 'Thân bài 1', icon: '📖', color: '#2E7D32', videos: [], completed: false },
-        { id: 's3', name: 'Thân bài 2', icon: '🔬', color: '#6A1B9A', videos: [], completed: false },
-        { id: 's4', name: 'Kết luận', icon: '🎯', color: '#E65100', videos: [], completed: false }
+        { id: 's1', name: 'Mở bài', icon: '🚀', color: '#1565C0', videos: [], images: [], completed: false },
+        { id: 's2', name: 'Thân bài 1', icon: '📖', color: '#2E7D32', videos: [], images: [], completed: false },
+        { id: 's3', name: 'Thân bài 2', icon: '🔬', color: '#6A1B9A', videos: [], images: [], completed: false },
+        { id: 's4', name: 'Kết luận', icon: '🎯', color: '#E65100', videos: [], images: [], completed: false }
       ],
       documentText: '',
       questions: { flashcards: [], wordle: [], memory: [], fillBlank: [], multipleChoice: [] }

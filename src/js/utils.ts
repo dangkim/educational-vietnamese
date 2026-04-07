@@ -50,6 +50,17 @@ export function isValidURL(str: string): boolean {
   }
 }
 
+export function isImageUrl(url: string): boolean {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  // Check common image extensions
+  if (/\.(jpe?g|png|gif|webp|svg|bmp|ico|avif)(\?.*)?$/i.test(lower)) return true;
+  // Check known image hosting services
+  if (lower.includes('imgur.com') || lower.includes('i.imgur.com')) return true;
+  if (lower.includes('unsplash.com/photos') || lower.includes('images.unsplash.com')) return true;
+  return false;
+}
+
 export function confetti(): void {
   const colors = ['#FFD54F', '#E91E63', '#4CAF50', '#2196F3', '#FF5722', '#9C27B0'];
   for (let i = 0; i < 60; i++) {

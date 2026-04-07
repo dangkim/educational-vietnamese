@@ -1,7 +1,7 @@
 import { AppState } from '../state';
 import { StorageService } from '../services/storage.service';
 import { R2Storage } from '../services/r2.service';
-import { qs, showToast, showSuccess, getYTEmbedUrl, escHTML } from '../utils';
+import { qs, showToast, showSuccess, getYTEmbedUrl, escHTML, isImageUrl } from '../utils';
 
 // We will import game initializers
 import { FlashcardGame } from '../games/flashcard.game';
@@ -90,6 +90,9 @@ export const StudentView = {
     const state = AppState.get();
     const sec = state.lesson.sections[state.currentSection];
     const videos = (sec.videos || []).filter(v => v.trim());
+    const images = (sec.images || []).filter(i => i.trim());
+    const media = [...videos, ...images];
+    
     const wrapper = qs('#video-wrapper');
     const controls = qs('#video-controls');
     const dots = qs('#video-dots');
@@ -98,9 +101,9 @@ export const StudentView = {
 
     const vc = qs<HTMLElement>('#video-carousel-container');
 
-    if (!videos.length) {
+    if (!media.length) {
       if (vc) vc.style.display = (sec.lecture && sec.lecture.trim()) ? 'none' : '';
-      wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">🎬</span><span>Chưa có nội dung đa phương tiện cho phần này</span></div>`;
+      wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">🎬</span><span>Chưa có video hoặc hình ảnh cho phần này</span></div>`;
       controls.style.display = 'none';
       return;
     }
@@ -108,24 +111,29 @@ export const StudentView = {
     if (vc) vc.style.display = '';
     
     const idx = state.currentVideo;
-    const url = getYTEmbedUrl(videos[idx]);
+    const itemUrl = media[idx];
     
-    if (url && (url.includes('youtube.com/embed') || url.includes('drive.google.com'))) {
-      wrapper.innerHTML = `<iframe src="${escHTML(url)}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
-    } else if (url) {
-      wrapper.innerHTML = `<video src="${escHTML(url)}" controls style="width:100%;height:100%"></video>`;
+    if (isImageUrl(itemUrl)) {
+      wrapper.innerHTML = `<img src="${escHTML(itemUrl)}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;" />`;
     } else {
-      wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">⚠️</span><span>Link video không hợp lệ</span></div>`;
+      const url = getYTEmbedUrl(itemUrl);
+      if (url && (url.includes('youtube.com/embed') || url.includes('drive.google.com'))) {
+        wrapper.innerHTML = `<iframe src="${escHTML(url)}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      } else if (url) {
+        wrapper.innerHTML = `<video src="${escHTML(url)}" controls style="width:100%;height:100%"></video>`;
+      } else {
+        wrapper.innerHTML = `<div class="no-video-placeholder"><span style="font-size:3rem">⚠️</span><span>Link không hợp lệ</span></div>`;
+      }
     }
     
-    if (videos.length > 1) {
+    if (media.length > 1) {
       controls.style.display = 'flex';
-      dots.innerHTML = videos.map((_,i) => `<div class="video-dot ${i===idx?'active':''}" data-idx="${i}"></div>`).join('');
+      dots.innerHTML = media.map((_,i) => `<div class="video-dot ${i===idx?'active':''}" data-idx="${i}"></div>`).join('');
       dots.querySelectorAll('.video-dot').forEach(d => {
         d.addEventListener('click', (e) => this.goToVideo(parseInt((e.currentTarget as HTMLElement).dataset.idx!, 10)));
       });
       const p = qs<HTMLButtonElement>('#vid-prev'); if (p) p.disabled = idx === 0;
-      const n = qs<HTMLButtonElement>('#vid-next'); if (n) n.disabled = idx === videos.length - 1;
+      const n = qs<HTMLButtonElement>('#vid-next'); if (n) n.disabled = idx === media.length - 1;
     } else {
       controls.style.display = 'none';
     }
@@ -140,8 +148,8 @@ export const StudentView = {
   nextVideo() {
     const s = AppState.get();
     const sec = s.lesson.sections[s.currentSection];
-    const videos = (sec.videos||[]).filter(v=>v);
-    if (s.currentVideo < videos.length-1) { 
+    const mediaCount = (sec.videos||[]).filter(v=>v).length + (sec.images||[]).filter(i=>i).length;
+    if (s.currentVideo < mediaCount - 1) { 
       AppState.set({ currentVideo: s.currentVideo + 1 }); 
       this.renderVideo(); 
     }

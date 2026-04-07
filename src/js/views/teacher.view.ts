@@ -8,7 +8,7 @@ import { Router } from '../router';
 export const TeacherView = {
   currentStep: 1,
   totalSteps: 5,
-  stepNames: ['Thông tin', 'Video', 'Tài liệu', 'Cài đặt', 'Tạo câu hỏi'],
+  stepNames: ['Thông tin', 'Đa phương tiện', 'Tài liệu', 'Cài đặt', 'Tạo câu hỏi'],
   previewTab: 'flashcards',
 
   init() {
@@ -121,7 +121,7 @@ export const TeacherView = {
         <div class="section-header">
           <div class="section-badge" style="background:${colors[idx]}">${sec.icon}</div>
           <span style="font-weight:800;color:var(--dark)">${sec.name}</span>
-          <span style="margin-left:auto;color:var(--muted);font-size:.85rem">${(sec.videos||[]).filter(v=>v).length} video</span>
+          <span style="margin-left:auto;color:var(--muted);font-size:.85rem">${(sec.videos||[]).filter(v=>v).length} video, ${(sec.images||[]).filter(i=>i).length} ảnh</span>
           <span style="margin-left:8px">⌄</span>
         </div>
         <div class="section-body hidden" id="sec-body-${idx}">
@@ -132,7 +132,13 @@ export const TeacherView = {
           <div id="vid-list-${idx}">
             ${(sec.videos||[]).map((v,vi) => this.renderVideoItem(idx, vi, v)).join('')}
           </div>
-          <button class="btn-add-video" data-sec="${idx}">+ Thêm video</button>
+          <div id="img-list-${idx}" style="margin-top:8px">
+            ${(sec.images||[]).map((img,ii) => this.renderImageItem(idx, ii, img)).join('')}
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn-add-video" data-sec="${idx}" style="flex:1">+ Thêm video</button>
+            <button class="btn-add-image" data-sec="${idx}" style="flex:1;background:var(--sky);color:white;border:none;border-radius:8px;padding:8px;cursor:pointer;font-weight:700">+ Thêm ảnh</button>
+          </div>
         </div>
       </div>
     `).join('');
@@ -143,16 +149,31 @@ export const TeacherView = {
     el.querySelectorAll('.btn-add-video').forEach(b => {
       b.addEventListener('click', (e) => this.addVideo(parseInt((e.currentTarget as HTMLElement).dataset.sec || '0', 10)));
     });
+    el.querySelectorAll('.btn-add-image').forEach(b => {
+      b.addEventListener('click', (e) => this.addImage(parseInt((e.currentTarget as HTMLElement).dataset.sec || '0', 10)));
+    });
     el.querySelectorAll('.vid-input').forEach(inp => {
       inp.addEventListener('change', (e) => {
         const t = e.target as HTMLInputElement;
         this.updateVideo(parseInt(t.dataset.sec!), parseInt(t.dataset.vid!), t.value);
       });
     });
+    el.querySelectorAll('.img-input').forEach(inp => {
+      inp.addEventListener('change', (e) => {
+        const t = e.target as HTMLInputElement;
+        this.updateImage(parseInt(t.dataset.sec!), parseInt(t.dataset.img!), t.value);
+      });
+    });
     el.querySelectorAll('.vid-remove').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const t = e.currentTarget as HTMLElement;
         this.removeVideo(parseInt(t.dataset.sec!), parseInt(t.dataset.vid!));
+      });
+    });
+    el.querySelectorAll('.img-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const t = e.currentTarget as HTMLElement;
+        this.removeImage(parseInt(t.dataset.sec!), parseInt(t.dataset.img!));
       });
     });
     el.querySelectorAll('.lecture-input').forEach(inp => {
@@ -179,11 +200,31 @@ export const TeacherView = {
     `;
   },
 
+  renderImageItem(secIdx: number, imgIdx: number, val='') {
+    return `
+      <div class="video-item" id="img-${secIdx}-${imgIdx}">
+        <span style="font-size:1.2rem">🖼️</span>
+        <input class="form-input img-input" data-sec="${secIdx}" data-img="${imgIdx}" placeholder="Dán link ảnh (JPG, PNG, GIF, Unsplash...)" value="${escHTML(val)}" />
+        <button class="btn-icon danger img-remove" data-sec="${secIdx}" data-img="${imgIdx}">✕</button>
+      </div>
+    `;
+  },
+
   addVideo(secIdx: number) {
     const s = AppState.get().lesson;
     const sec = s.sections[secIdx];
     sec.videos = sec.videos || [];
     sec.videos.push('');
+    AppState.updateLesson({ sections: s.sections });
+    this.renderSections();
+    qs(`#sec-body-${secIdx}`)?.classList.remove('hidden');
+  },
+
+  addImage(secIdx: number) {
+    const s = AppState.get().lesson;
+    const sec = s.sections[secIdx];
+    sec.images = sec.images || [];
+    sec.images.push('');
     AppState.updateLesson({ sections: s.sections });
     this.renderSections();
     qs(`#sec-body-${secIdx}`)?.classList.remove('hidden');
@@ -197,9 +238,23 @@ export const TeacherView = {
     qs(`#sec-body-${secIdx}`)?.classList.remove('hidden');
   },
 
+  removeImage(secIdx: number, imgIdx: number) {
+    const s = AppState.get().lesson;
+    s.sections[secIdx].images.splice(imgIdx, 1);
+    AppState.updateLesson({ sections: s.sections });
+    this.renderSections();
+    qs(`#sec-body-${secIdx}`)?.classList.remove('hidden');
+  },
+
   updateVideo(secIdx: number, vidIdx: number, val: string) {
     const s = AppState.get().lesson;
     s.sections[secIdx].videos[vidIdx] = val;
+    AppState.updateLesson({ sections: s.sections });
+  },
+
+  updateImage(secIdx: number, imgIdx: number, val: string) {
+    const s = AppState.get().lesson;
+    s.sections[secIdx].images[imgIdx] = val;
     AppState.updateLesson({ sections: s.sections });
   },
 
