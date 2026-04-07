@@ -62,23 +62,26 @@
   pointer-events: none;
 }
 
-/* Star / sparkle icon instead of question mark */
+/* Star / sparkle icon - hidden to show number more clearly */
 .mem-card-back-face::after {
-  content: '✦';
-  font-size: 1.6rem;
-  color: rgba(255,255,255,.35);
-  text-shadow: 0 0 12px rgba(255,255,255,.15);
-  animation: mem-pulse 2.5s ease-in-out infinite;
+  content: '';
   z-index: 1;
 }
 
-/* Inner border accent */
+/* Inner border accent + Number styling */
 .mem-card-back-inner {
   position: absolute;
   inset: 6px;
   border-radius: 12px;
-  border: 2px dashed rgba(255,255,255,.18);
+  border: 2.5px solid rgba(255,255,255,.18);
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.8rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
 
 @keyframes mem-pulse {

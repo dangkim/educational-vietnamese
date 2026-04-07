@@ -30,6 +30,25 @@ export function fromBase64<T>(str: string): T | null {
   }
 }
 
+const ENCRYPTION_KEY = 73; // Simple static XOR key (ASCII 'I')
+
+export function encryptText(text: string): string {
+  if (!text) return text;
+  // Simple XOR and then Base64 with a prefix
+  const obfuscated = text.split('').map(c => String.fromCharCode(c.charCodeAt(0) ^ ENCRYPTION_KEY)).join('');
+  return 'v2:' + btoa(obfuscated);
+}
+
+export function decryptText(text: string): string {
+  if (!text || !text.startsWith('v2:')) return text; // If no prefix, assume unencrypted (legacy)
+  try {
+    const raw = atob(text.substring(3));
+    return raw.split('').map(c => String.fromCharCode(c.charCodeAt(0) ^ ENCRYPTION_KEY)).join('');
+  } catch (e) {
+    return text;
+  }
+}
+
 export function getYTEmbedUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&\s?]+)/);

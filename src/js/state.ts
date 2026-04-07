@@ -25,6 +25,8 @@ export interface Questions {
 
 export interface AppStateData {
   lesson: {
+    id?: string;
+    updatedAt?: string;
     title: string;
     subject: string;
     grade: string;
@@ -34,12 +36,8 @@ export interface AppStateData {
     questions: Questions;
   };
   config: {
+    teacherId?: string;
     geminiKey: string;
-    r2AccountId: string;
-    r2AccessKey: string;
-    r2SecretKey: string;
-    r2Bucket: string;
-    r2PublicDomain: string;
   };
   student: {
     name: string;
@@ -66,7 +64,7 @@ class StateManager {
       documentText: '',
       questions: { flashcards: [], wordle: [], memory: [], fillBlank: [], multipleChoice: [] }
     },
-    config: { geminiKey: '', r2AccountId: '', r2AccessKey: '', r2SecretKey: '', r2Bucket: '', r2PublicDomain: '' },
+    config: { teacherId: '', geminiKey: '' },
     student: { name: '', answers: {}, completedGames: {} },
     currentSection: 0,
     currentVideo: 0,

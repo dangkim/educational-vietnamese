@@ -268,7 +268,8 @@ export const StudentView = {
     };
 
     // Try R2 if configured
-    if (s.config.r2AccountId && s.config.r2Bucket && s.config.r2AccessKey) {
+    const r2Configured = import.meta.env.VITE_R2_ACCOUNT_ID && import.meta.env.VITE_R2_BUCKET && import.meta.env.VITE_R2_ACCESS_KEY;
+    if (r2Configured) {
       showToast('⏳ Đang nộp bài...', '', 10000);
       try {
         await R2Storage.uploadAnswer(data);

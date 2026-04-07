@@ -119,8 +119,11 @@
       <h2>⚙️ Cài Đặt AI & Lưu Trữ</h2>
       <p class="subtitle">Bước 4 / 5 — Cấu hình API Gemini và Cloudflare R2</p>
       
-      <div class="api-info">
-        <p>🤖 <strong>Gemini API (Miễn phí)</strong> — Lấy API key tại <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>. Free 1500 requests/ngày với Gemini 2.0 Flash!</p>
+
+      <div class="form-group" style="padding:12px; background:#e3f2fd; border-radius:12px; margin-bottom:16px;">
+        <label class="form-label">Mã Giáo Viên (Teacher ID) <span style="color:var(--muted);font-weight:normal;font-size:.85rem">(Biệt danh viết liền không dấu. VD: colan, tieuhoc1)</span></label>
+        <input class="form-input" id="teacher-id" placeholder="VD: colanh123" style="background:white" />
+        <p class="form-hint" style="margin-top:4px">💡 Giúp phân chia thư viện bản nháp trên Cloud cho nhiều giáo viên. Nếu trống, máy sẽ lưu vào thư viện "default".</p>
       </div>
       <div class="form-group">
         <label class="form-label">Gemini API Key *</label>
@@ -130,39 +133,6 @@
         </div>
       </div>
       
-      <div style="margin:24px 0;border-top:2px solid #F5F5F5;padding-top:24px">
-        <div class="api-info" style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9)">
-          <p>☁️ <strong>Cloudflare R2 (Tùy chọn)</strong> — Lưu bài làm học sinh. Bỏ trống nếu chỉ muốn download JSON.</p>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">R2 Account ID</label>
-        <input class="form-input" id="r2-account" placeholder="abc123..." />
-      </div>
-      <div class="form-group">
-        <label class="form-label">R2 Access Key ID</label>
-        <div class="input-wrap">
-          <input class="form-input" id="r2-access-key" type="password" placeholder="Access Key..." />
-          <button class="eye-btn" data-target="r2-access-key">👁️</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">R2 Secret Access Key</label>
-        <div class="input-wrap">
-          <input class="form-input" id="r2-secret-key" type="password" placeholder="Secret Key..." />
-          <button class="eye-btn" data-target="r2-secret-key">👁️</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">R2 Bucket Name</label>
-        <input class="form-input" id="r2-bucket" placeholder="eduplay-answers" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">R2 Public URL (Public Development URL)</label>
-        <input class="form-input" id="r2-public-url" placeholder="https://pub-xxx.r2.dev" />
-      </div>
-      <p class="form-hint">💡 Cần bật <b>Public Development URL</b> và copy URL dán vào đây để tạo link rút gọn.</p>
-      <p class="form-hint">💡 Cần bật CORS trên R2 bucket để web app có thể upload trực tiếp từ browser.</p>
     </div>
     
     <!-- Step 5: Generate & Preview -->

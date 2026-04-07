@@ -3,7 +3,7 @@ import { StudentView } from '../views/student.view';
 import { qs, escHTML, showSuccess } from '../utils';
 
 export const MemoryGame = {
-  cards: [] as any[], flipped: [] as number[], matched: [] as number[], moves: 0, timer: null as any, seconds: 0,
+  cards: [] as any[], flipped: [] as number[], matched: [] as number[], moves: 0, timer: null as any, seconds: 0, isPeek: false, peekTime: 10,
 
   init(container: Element) {
     const pairs = AppState.get().lesson.questions.memory || [];
@@ -20,7 +20,7 @@ export const MemoryGame = {
     this.flipped = []; this.matched = []; this.moves = 0; this.seconds = 0;
     if (this.timer) clearInterval(this.timer);
 
-    const cols = pairs.length <= 4 ? 4 : pairs.length <= 6 ? 4 : 4;
+    const cols = 4;
     container.innerHTML = `
       <div class="game-header">
         <span style="font-size:1.5rem">🧩</span>
@@ -34,11 +34,32 @@ export const MemoryGame = {
             <div class="memory-stat"><div class="memory-stat-num" id="mem-matches">0/${pairs.length}</div><div class="memory-stat-label">Cặp đúng</div></div>
             <div class="memory-stat"><div class="memory-stat-num" id="mem-time">0:00</div><div class="memory-stat-label">Thời gian</div></div>
           </div>
+          <div id="peek-timer" style="text-align:center; margin-bottom:12px; font-weight:800; color:var(--sky); font-size:1.2rem;">Ghi nhớ: 10s</div>
           <div class="memory-grid" id="mem-grid" style="grid-template-columns:repeat(${cols},1fr)"></div>
         </div>
       </div>
     `;
+
+    this.isPeek = true;
     this.renderGrid();
+
+    let peekLeft = this.peekTime;
+    const peekInterval = setInterval(() => {
+      peekLeft--;
+      const pEl = qs('#peek-timer');
+      if (pEl) pEl.textContent = `Ghi nhớ: ${peekLeft}s`;
+      if (peekLeft <= 0) {
+        clearInterval(peekInterval);
+        this.isPeek = false;
+        if (pEl) pEl.style.display = 'none';
+        this.renderGrid();
+        this.startTimer();
+      }
+    }, 1000);
+  },
+
+  startTimer() {
+    if (this.timer) clearInterval(this.timer);
     this.timer = setInterval(() => {
       this.seconds++;
       const m = Math.floor(this.seconds/60), s = this.seconds%60;
@@ -51,13 +72,13 @@ export const MemoryGame = {
     const grid = qs('#mem-grid');
     if (!grid) return;
     grid.innerHTML = this.cards.map((card, idx) => {
-      const isFlipped = this.flipped.includes(idx) || this.matched.includes(card.pairId);
+      const isFlipped = this.isPeek || this.flipped.includes(idx) || this.matched.includes(card.pairId);
       const isMatched = this.matched.includes(card.pairId);
       const fontSize = card.text.length > 20 ? '.65rem' : card.text.length > 10 ? '.72rem' : '.85rem';
       return `
       <div class="mem-card-wrap" data-idx="${idx}">
         <div class="mem-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" id="mc-${idx}">
-          <div class="mem-card-face mem-card-back-face"><div class="mem-card-back-inner"></div></div>
+          <div class="mem-card-face mem-card-back-face"><div class="mem-card-back-inner">${idx + 1}</div></div>
           <div class="mem-card-face mem-card-front-face" style="font-size:${fontSize}">${escHTML(card.text)}</div>
         </div>
       </div>`;
@@ -69,6 +90,7 @@ export const MemoryGame = {
   },
 
   flip(idx: number) {
+    if (this.isPeek) return;
     if (this.flipped.length >= 2) return;
     if (this.flipped.includes(idx)) return;
     if (this.matched.includes(this.cards[idx].pairId)) return;

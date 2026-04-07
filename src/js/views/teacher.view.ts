@@ -14,6 +14,7 @@ export const TeacherView = {
   init() {
     StorageService.loadTeacherState();
     this.renderStepper();
+    this.renderLibraryButton();
     this.renderSections();
     this.showStep(1);
     this.bindEvents();
@@ -32,11 +33,8 @@ export const TeacherView = {
       const gemKey = qs<HTMLInputElement>('#gemini-key');
       if (gemKey) gemKey.value = s.config.geminiKey || '';
       
-      const r2Account = qs<HTMLInputElement>('#r2-account'); if (r2Account) r2Account.value = s.config.r2AccountId || '';
-      const r2AccessKey = qs<HTMLInputElement>('#r2-access-key'); if (r2AccessKey) r2AccessKey.value = s.config.r2AccessKey || '';
-      const r2SecretKey = qs<HTMLInputElement>('#r2-secret-key'); if (r2SecretKey) r2SecretKey.value = s.config.r2SecretKey || '';
-      const r2Bucket = qs<HTMLInputElement>('#r2-bucket'); if (r2Bucket) r2Bucket.value = s.config.r2Bucket || '';
-      const r2Public = qs<HTMLInputElement>('#r2-public-url'); if (r2Public) r2Public.value = s.config.r2PublicDomain || '';
+      const teacherId = qs<HTMLInputElement>('#teacher-id');
+      if (teacherId) teacherId.value = s.config.teacherId || '';
     }, 50);
   },
 
@@ -84,6 +82,60 @@ export const TeacherView = {
         showToast('Đã lấy nội dung từ các phần bài giảng!', 'success');
       }
     });
+
+    qs('#btn-save-draft')?.addEventListener('click', () => this.saveDraft());
+    qs('#btn-library')?.addEventListener('click', () => this.openLibrary());
+
+    // Real-time sync for basic info
+    ['title', 'subject', 'grade'].forEach(f => {
+      qs<HTMLInputElement>(`#lesson-${f}`)?.addEventListener('input', (e) => {
+        const val = (e.target as HTMLInputElement).value.trim();
+        AppState.updateLesson({ [f]: val });
+        if (f === 'title') {
+          const tNav = qs('#teacher-nav-title');
+          if (tNav) tNav.textContent = val || 'Tạo Bài Học Mới';
+        }
+      });
+    });
+    qs<HTMLTextAreaElement>('#lesson-desc')?.addEventListener('input', (e) => {
+      AppState.updateLesson({ description: (e.target as HTMLTextAreaElement).value.trim() });
+    });
+
+    // Step 3: Document Text
+    qs<HTMLTextAreaElement>('#doc-text')?.addEventListener('input', (e) => {
+      AppState.updateLesson({ documentText: (e.target as HTMLTextAreaElement).value.trim() });
+    });
+
+    // Step 4: Settings
+    qs<HTMLInputElement>('#gemini-key')?.addEventListener('input', (e) => {
+      AppState.updateConfig({ geminiKey: (e.target as HTMLInputElement).value.trim() });
+    });
+    qs<HTMLInputElement>('#teacher-id')?.addEventListener('input', (e) => {
+      AppState.updateConfig({ teacherId: (e.target as HTMLInputElement).value.trim() });
+    });
+  },
+
+  renderLibraryButton() {
+    const nav = qs('.top-nav');
+    if (nav && !qs('#btn-library')) {
+      const btn = document.createElement('button');
+      btn.id = 'btn-library';
+      btn.className = 'nav-back';
+      btn.style.marginLeft = '12px';
+      btn.style.background = 'var(--sky)';
+      btn.style.color = 'white';
+      btn.innerHTML = '📚 Thư viện';
+      nav.insertBefore(btn, qs('.btn-go-home'));
+
+      const saveBtn = document.createElement('button');
+      saveBtn.id = 'btn-save-draft';
+      saveBtn.className = 'nav-back';
+      saveBtn.style.marginLeft = '12px';
+      saveBtn.style.background = 'var(--mint)';
+      saveBtn.style.color = 'white';
+      saveBtn.innerHTML = '💾 Lưu nháp';
+      nav.insertBefore(saveBtn, btn);
+    }
   },
 
   renderStepper() {
@@ -113,16 +165,19 @@ export const TeacherView = {
   },
 
   renderSections() {
-    const colors = ['#1565C0','#2E7D32','#6A1B9A','#E65100'];
+    const colors = ['#1565C0','#2E7D32','#6A1B9A','#E65100', '#C62828', '#AD1457', '#00838F', '#2E7D32'];
     const el = qs('#sections-container');
     if (!el) return;
-    el.innerHTML = AppState.get().lesson.sections.map((sec, idx) => `
+    
+    const sections = AppState.get().lesson.sections;
+    let html = sections.map((sec, idx) => `
       <div class="section-card">
         <div class="section-header">
-          <div class="section-badge" style="background:${colors[idx]}">${sec.icon}</div>
-          <span style="font-weight:800;color:var(--dark)">${sec.name}</span>
+          <div class="section-badge" style="background:${colors[idx % colors.length]}">${sec.icon}</div>
+          <input class="section-name-input" data-idx="${idx}" value="${escHTML(sec.name)}" style="font-weight:800; border:none; background:transparent; font-family:inherit; font-size:1rem; color:var(--dark); width:150px;" />
           <span style="margin-left:auto;color:var(--muted);font-size:.85rem">${(sec.videos||[]).filter(v=>v).length} video, ${(sec.images||[]).filter(i=>i).length} ảnh</span>
-          <span style="margin-left:8px">⌄</span>
+          <button class="btn-icon danger btn-del-section" data-idx="${idx}" style="margin-left:12px; font-size:1rem;">✕</button>
+          <span class="toggle-icon" style="margin-left:8px; cursor:pointer;">⌄</span>
         </div>
         <div class="section-body hidden" id="sec-body-${idx}">
           <div class="form-group" style="padding: 12px; background: #fff; border-radius: 8px; margin-bottom: 12px; border: 1px solid #eee;">
@@ -143,9 +198,38 @@ export const TeacherView = {
       </div>
     `).join('');
 
-    el.querySelectorAll('.section-header').forEach(h => {
-      h.addEventListener('click', () => h.nextElementSibling?.classList.toggle('hidden'));
+    html += `
+      <div style="margin-top:20px; text-align:center;">
+        <button id="btn-add-section" style="background:var(--mint); color:white; padding:12px 24px; border-radius:12px; font-weight:800; border:none; cursor:pointer;box-shadow:0 4px 12px rgba(76,175,80,0.2)">+ Thêm Phần Bài Giảng</button>
+      </div>
+    `;
+
+    el.innerHTML = html;
+
+    el.querySelectorAll('.toggle-icon').forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        const header = (e.currentTarget as HTMLElement).closest('.section-header');
+        header?.nextElementSibling?.classList.toggle('hidden');
+      });
     });
+    
+    el.querySelectorAll('.section-name-input').forEach(inp => {
+      inp.addEventListener('change', (e) => {
+        const t = e.target as HTMLInputElement;
+        this.renameSection(parseInt(t.dataset.idx!, 10), t.value);
+      });
+      inp.addEventListener('click', (e) => e.stopPropagation());
+    });
+
+    el.querySelectorAll('.btn-del-section').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.deleteSection(parseInt((e.currentTarget as HTMLElement).dataset.idx!, 10));
+      });
+    });
+
+    qs('#btn-add-section')?.addEventListener('click', () => this.addSection());
+
     el.querySelectorAll('.btn-add-video').forEach(b => {
       b.addEventListener('click', (e) => this.addVideo(parseInt((e.currentTarget as HTMLElement).dataset.sec || '0', 10)));
     });
@@ -187,6 +271,35 @@ export const TeacherView = {
   updateLecture(secIdx: number, val: string) {
     const s = AppState.get().lesson;
     s.sections[secIdx].lecture = val;
+    AppState.updateLesson({ sections: s.sections });
+  },
+
+  addSection() {
+    const s = AppState.get().lesson;
+    s.sections.push({
+      id: 's' + (s.sections.length + 1),
+      name: 'Phần mới',
+      icon: '📖',
+      color: '#2E7D32',
+      videos: [],
+      images: [],
+      completed: false
+    });
+    AppState.updateLesson({ sections: s.sections });
+    this.renderSections();
+  },
+
+  deleteSection(idx: number) {
+    if (!confirm('Bạn có chắc muốn xoá phần này?')) return;
+    const s = AppState.get().lesson;
+    s.sections.splice(idx, 1);
+    AppState.updateLesson({ sections: s.sections });
+    this.renderSections();
+  },
+
+  renameSection(idx: number, name: string) {
+    const s = AppState.get().lesson;
+    s.sections[idx].name = name;
     AppState.updateLesson({ sections: s.sections });
   },
 
@@ -313,13 +426,10 @@ export const TeacherView = {
     }
     if (n === 4) {
       const geminiKey = qs<HTMLInputElement>('#gemini-key')?.value?.trim() || '';
+      const teacherId = qs<HTMLInputElement>('#teacher-id')?.value?.trim() || '';
       AppState.updateConfig({
         geminiKey,
-        r2AccountId: qs<HTMLInputElement>('#r2-account')?.value?.trim() || '',
-        r2AccessKey: qs<HTMLInputElement>('#r2-access-key')?.value?.trim() || '',
-        r2SecretKey: qs<HTMLInputElement>('#r2-secret-key')?.value?.trim() || '',
-        r2Bucket: qs<HTMLInputElement>('#r2-bucket')?.value?.trim() || '',
-        r2PublicDomain: qs<HTMLInputElement>('#r2-public-url')?.value?.trim() || ''
+        teacherId
       });
       if (!geminiKey) { showToast('Vui lòng nhập Gemini API Key!', 'error'); return false; }
     }
@@ -486,11 +596,13 @@ export const TeacherView = {
     };
 
     // Try R2 upload if configured
-    if (state.config.r2AccountId && state.config.r2Bucket && state.config.r2AccessKey && state.config.r2SecretKey) {
+    const r2Bucket = import.meta.env.VITE_R2_BUCKET;
+    const r2Configured = import.meta.env.VITE_R2_ACCOUNT_ID && r2Bucket && import.meta.env.VITE_R2_ACCESS_KEY && import.meta.env.VITE_R2_SECRET_KEY;
+    if (r2Configured) {
       showToast('⏳ Đang lưu bài học lên R2...', '', 5000);
       R2Storage.uploadLesson(state.lesson).then(id => {
         // Extract domain part from https://pub-xxx.r2.dev
-        let domain = state.config.r2PublicDomain || '';
+        let domain = import.meta.env.VITE_R2_PUBLIC_DOMAIN || '';
         if (domain.includes('://')) {
           domain = new URL(domain).hostname;
         }
@@ -507,6 +619,106 @@ export const TeacherView = {
       });
     } else {
       showPublishSuccess(url);
+    }
+  },
+
+  ensureTeacherId(): boolean {
+    const s = AppState.get();
+    if (!s.config.teacherId) {
+      const id = window.prompt('Vui lòng nhập Mã Giáo Viên (Teacher ID) để có thư viện bản nháp riêng trên Cloud (VD: colan123, thaybinh):');
+      if (id && id.trim()) {
+        const cleanId = id.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+        AppState.updateConfig({ teacherId: cleanId });
+        const el = qs<HTMLInputElement>('#teacher-id');
+        if (el) el.value = cleanId;
+        StorageService.saveTeacherState();
+        return true;
+      }
+      return false; // User cancelled or left empty
+    }
+    return true;
+  },
+
+  async saveDraft() {
+    // Sync current step data
+    if (!this.gatherStep(this.currentStep)) {
+      // If gathering failed (e.g. current step has errors), 
+      // check if we at least have a title to allow saving a rough draft
+      if (!AppState.get().lesson.title) return; 
+    }
+    
+    const state = AppState.get();
+    if (!state.lesson.title) {
+      showToast('Vui lòng nhập tên bài học ở Bước 1 trước!', 'error');
+      this.showStep(1);
+      return;
+    }
+    
+    if (!this.ensureTeacherId()) return;
+    
+    showToast('⏳ Đang lưu bản nháp lên R2...', '', 5000);
+    try {
+      await R2Storage.saveLessonDraft(state.lesson);
+      showToast('✅ Đã lưu bản nháp!', 'success');
+    } catch(e: any) {
+      showToast('❌ Lỗi lưu nháp: ' + e.message, 'error');
+    }
+  },
+
+  async openLibrary() {
+    if (!this.ensureTeacherId()) return;
+
+    showToast('⏳ Đang tải thư viện...', '', 5000);
+    try {
+      const index = await R2Storage.fetchLessonIndex();
+      if (!index || index.length === 0) {
+        showSuccess('📚 Thư viện', 'Trống', 'Chưa có bài học nào được lưu.', '0 bài học');
+        return;
+      }
+
+      const html = `
+        <div style="max-height: 400px; overflow-y: auto; text-align: left;">
+          ${index.sort((a,b) => new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime()).map(item => `
+            <div class="library-item" style="padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight:800; color:var(--dark)">${escHTML(item.title)}</div>
+                <div style="font-size:0.75rem; color:var(--muted)">${item.subject || 'Không môn'} • ${item.grade || 'Không lớp'} • ${new Date(item.updatedAt!).toLocaleString()}</div>
+              </div>
+              <button class="btn-load-draft" data-id="${item.id}" style="background:var(--sky); color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700">Mở</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      showSuccess('📚 Thư viện', 'Chọn bài học', html, `${index.length} bài học`);
+
+      setTimeout(() => {
+        document.querySelectorAll('.btn-load-draft').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = (e.currentTarget as HTMLElement).dataset.id!;
+            qs('#success-overlay')?.classList.add('hidden');
+            this.loadDraft(id);
+          });
+        });
+      }, 100);
+
+    } catch(e: any) {
+      showToast('❌ Lỗi tải thư viện: ' + e.message, 'error');
+    }
+  },
+
+  async loadDraft(id: string) {
+    showToast('⏳ Đang tải bài học...', '', 5000);
+    try {
+      const lesson = await R2Storage.fetchLesson(id);
+      if (lesson) {
+        AppState.updateLesson(lesson);
+        // Refresh UI
+        this.init();
+        showToast('✅ Đã tải bài học thành công!', 'success');
+      }
+    } catch(e: any) {
+      showToast('❌ Lỗi tải bài học: ' + e.message, 'error');
     }
   }
 };
