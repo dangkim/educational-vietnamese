@@ -38,6 +38,7 @@ export interface AppStateData {
   config: {
     teacherId?: string;
     geminiKey: string;
+    students: string[];
   };
   student: {
     name: string;
@@ -64,7 +65,7 @@ class StateManager {
       documentText: '',
       questions: { flashcards: [], wordle: [], memory: [], fillBlank: [], multipleChoice: [] }
     },
-    config: { teacherId: '', geminiKey: '' },
+    config: { teacherId: '', geminiKey: '', students: [] },
     student: { name: '', answers: {}, completedGames: {} },
     currentSection: 0,
     currentVideo: 0,

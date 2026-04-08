@@ -9,6 +9,7 @@ import { WordleGame } from '../games/wordle.game';
 import { MemoryGame } from '../games/memory.game';
 import { FillBlankGame } from '../games/fillblank.game';
 import { MCQGame } from '../games/mcq.game';
+import { DragDropGame } from '../games/dragdrop.game';
 
 export const StudentView = {
   initialized: false,
@@ -196,6 +197,7 @@ export const StudentView = {
       { key:'flashcards', label:'Flashcards', icon:'🃏', cls:'flashcard-btn', sub:'Lật thẻ học từ', count: q.flashcards?.length||0 },
       { key:'wordle', label:'Wordle', icon:'🔤', cls:'wordle-btn', sub:'Đoán từ bí ẩn', count: q.wordle?.length||0 },
       { key:'memory', label:'Memory', icon:'🧩', cls:'memory-btn', sub:'Ghép đôi thẻ', count: q.memory?.length||0 },
+      { key:'dragdrop', label:'Kéo & Thả', icon:'🎯', cls:'dragdrop-btn', sub:'Ghép câu hỏi', count: q.memory?.length||0 },
       { key:'fillblank', label:'Điền trống', icon:'✏️', cls:'fillblank-btn', sub:'Hoàn thành câu', count: q.fillBlank?.length||0 },
       { key:'mcq', label:'Trắc nghiệm', icon:'📋', cls:'mcq-btn', sub:'Chọn đáp án', count: q.multipleChoice?.length||0 }
     ];
@@ -232,6 +234,7 @@ export const StudentView = {
       case 'flashcards': FlashcardGame.init(container); break;
       case 'wordle': WordleGame.init(container); break;
       case 'memory': MemoryGame.init(container); break;
+      case 'dragdrop': DragDropGame.init(container); break;
       case 'fillblank': FillBlankGame.init(container); break;
       case 'mcq': MCQGame.init(container); break;
     }

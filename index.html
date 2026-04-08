@@ -80,6 +80,27 @@
         <label class="form-label">Mô tả ngắn</label>
         <textarea class="form-input" id="lesson-desc" rows="2" placeholder="VD: Tìm hiểu về các loài động vật hoang dã..."></textarea>
       </div>
+
+      <!-- Student Roster -->
+      <div class="roster-panel" id="roster-panel">
+        <div class="roster-header" id="roster-toggle">
+          <span>👥 Danh sách học sinh</span>
+          <span class="roster-count" id="roster-count">0 học sinh</span>
+          <span class="roster-chevron" id="roster-chevron">▸</span>
+        </div>
+        <div class="roster-body hidden" id="roster-body">
+          <p class="roster-hint">📌 Nhập mỗi tên một dòng. Nhấn phím số (1–9) khi đang ở màn hình này để gọi tên học sinh.</p>
+          <textarea class="form-input" id="student-roster-input" rows="8" placeholder="Ví dụ:
+Nguyễn Văn An
+Trần Thị Bình
+Lê Quang Cường
+..."></textarea>
+          <div class="roster-actions">
+            <button class="btn-roster-random" id="btn-roster-random">🎲 Gọi ngẫu nhiên</button>
+            <span class="roster-save-hint">Danh sách tự động lưu</span>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Step 2: Videos -->
@@ -236,6 +257,21 @@
     <p id="success-msg">Bạn đã hoàn thành bài tập!</p>
     <div class="score-display" id="success-score"></div>
     <button class="btn-next" id="btn-success-continue" style="margin-top:8px">Tiếp tục 🎉</button>
+  </div>
+</div>
+
+<!-- STUDENT PICKER OVERLAY -->
+<div id="student-picker-overlay" class="student-picker-overlay hidden">
+  <div class="picker-backdrop"></div>
+  <div class="picker-card" id="picker-card">
+    <div class="picker-label" id="picker-label">Học sinh số</div>
+    <div class="picker-number" id="picker-number">1</div>
+    <div class="picker-name" id="picker-name">Nguyễn Văn An</div>
+    <div class="picker-actions">
+      <button class="picker-btn-random" id="btn-picker-random">🎲 Ngẫu nhiên</button>
+      <button class="picker-btn-close" id="btn-picker-close">✕ Đóng</button>
+    </div>
+    <p class="picker-hint">Nhấn phím số hoặc R để gọi ngẫu nhiên • ESC để đóng</p>
   </div>
 </div>
 

@@ -70,6 +70,7 @@
 .game-btn.memory-btn::before { background: linear-gradient(135deg,var(--purple-light),#EDE7F6); }
 .game-btn.fillblank-btn::before { background: linear-gradient(135deg,var(--orange-light),#FFF8E1); }
 .game-btn.mcq-btn::before { background: linear-gradient(135deg,var(--pink-light),#FCE4EC); }
+.game-btn.dragdrop-btn::before { background: linear-gradient(135deg,#E0F7FA,#B2EBF2); }
 .game-btn.active::before { opacity: 1; }
 .game-btn-content { position: relative; z-index: 1; }
 .game-icon { font-size: 2.5rem; margin-bottom: 8px; }

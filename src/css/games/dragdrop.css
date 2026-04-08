@@ -1,0 +1,200 @@
+/* ============================
+   DRAG & DROP GAME STYLES
+   ============================ */
+
+.dd-stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 12px 0 16px;
+  border-bottom: 2px solid #F5F5F5;
+  margin-bottom: 16px;
+}
+.dd-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.dd-stat span {
+  font-family: var(--font-header);
+  font-size: 1.8rem;
+  color: var(--dark);
+  font-weight: 700;
+  line-height: 1;
+}
+.dd-stat label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dd-instruction {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background: var(--sky-light);
+  border-radius: 10px;
+}
+
+/* ---- Layout ---- */
+.dd-arena {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .dd-arena { grid-template-columns: 1fr; }
+}
+
+.dd-column { display: flex; flex-direction: column; gap: 10px; }
+
+.dd-col-header {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 0;
+  border-bottom: 2px solid #ECEFF1;
+  margin-bottom: 4px;
+}
+
+/* ---- Drop zones (left column) ---- */
+.dd-drop-zone {
+  background: white;
+  border: 2px dashed #CFD8DC;
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+  cursor: default;
+  min-height: 80px;
+}
+.dd-drop-zone.dd-over {
+  border-color: var(--sky);
+  background: var(--sky-light);
+  transform: scale(1.02);
+  box-shadow: 0 0 0 4px rgba(41,182,246,0.15);
+}
+.dd-drop-zone.dd-matched {
+  border: 2px solid var(--mint);
+  background: var(--mint-light);
+  cursor: default;
+}
+.dd-drop-zone.dd-shake {
+  animation: dd-shake 0.5s ease;
+  border-color: var(--coral);
+  background: #FBE9E7;
+}
+
+.dd-term-text {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--dark);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.dd-slot {
+  font-size: 0.85rem;
+  color: #B0BEC5;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px dashed #CFD8DC;
+  background: #FAFAFA;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.dd-slot.dd-slot-filled {
+  color: var(--mint);
+  background: white;
+  border-color: var(--mint);
+  border-style: solid;
+  font-weight: 700;
+  animation: dd-pop-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ---- Draggable chips (right column) ---- */
+.dd-chips-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dd-chip {
+  background: white;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.dd-chip:hover:not(.dd-chip-locked) {
+  border-color: var(--sky);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(41,182,246,0.2);
+}
+.dd-chip.dd-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+  transform: scale(0.97);
+}
+.dd-chip.dd-chip-wrong {
+  border-color: var(--coral);
+  background: #FBE9E7;
+  animation: dd-chip-shake 0.5s ease;
+}
+.dd-chip.dd-chip-locked {
+  cursor: default;
+  border-color: #E0E0E0;
+  background: #FAFAFA;
+}
+
+.dd-chip-grip {
+  font-size: 1.3rem;
+  color: #B0BEC5;
+  flex-shrink: 0;
+  letter-spacing: -2px;
+}
+.dd-chip-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ---- Animations ---- */
+@keyframes dd-shake {
+  0%,100% { transform: translateX(0); }
+  15%      { transform: translateX(-8px) rotate(-1deg); }
+  30%      { transform: translateX(8px) rotate(1deg); }
+  45%      { transform: translateX(-6px); }
+  60%      { transform: translateX(6px); }
+  75%      { transform: translateX(-3px); }
+  90%      { transform: translateX(3px); }
+}
+@keyframes dd-chip-shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+@keyframes dd-pop-in {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}

@@ -45,6 +45,13 @@ export const TeacherView = {
     const teacherId = qs<HTMLInputElement>('#teacher-id');
     if (teacherId) teacherId.value = s.config.teacherId || '';
     
+    // Restore student roster
+    const rosterInput = qs<HTMLTextAreaElement>('#student-roster-input');
+    if (rosterInput) {
+      rosterInput.value = (s.config.students || []).join('\n');
+      this.updateRosterCount();
+    }
+    
     const tNav = qs('#teacher-nav-title');
     if (tNav) tNav.textContent = s.lesson.title || 'Tạo Bài Học Mới';
   },
@@ -123,6 +130,52 @@ export const TeacherView = {
     });
     qs<HTMLInputElement>('#teacher-id')?.addEventListener('input', (e) => {
       AppState.updateConfig({ teacherId: (e.target as HTMLInputElement).value.trim() });
+    });
+
+    // Student roster panel toggle
+    qs('#roster-toggle')?.addEventListener('click', () => {
+      const body = qs('#roster-body');
+      const chevron = qs('#roster-chevron');
+      if (body) body.classList.toggle('hidden');
+      if (chevron) chevron.textContent = body?.classList.contains('hidden') ? '\u25b8' : '\u25be';
+    });
+
+    // Student roster textarea — save on change
+    qs<HTMLTextAreaElement>('#student-roster-input')?.addEventListener('input', () => {
+      this.parseAndSaveRoster();
+    });
+
+    // Quick random button in roster panel
+    qs('#btn-roster-random')?.addEventListener('click', () => {
+      this.showStudentPicker(-1);
+    });
+
+    // Keyboard number picker (only when teacher view is active)
+    document.addEventListener('keydown', (e) => {
+      const teacherView = qs<HTMLElement>('#view-teacher');
+      if (!teacherView || teacherView.classList.contains('hidden')) return;
+      // Ignore if focus is on an input/textarea
+      const tag = (document.activeElement as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (e.key === 'Escape') { this.closeStudentPicker(); return; }
+      if (e.key === 'r' || e.key === 'R') { this.showStudentPicker(-1); return; }
+
+      const num = parseInt(e.key);
+      if (!isNaN(num) && num >= 0) {
+        const idx = num === 0 ? 9 : num - 1; // 0 key = student 10
+        this.showStudentPicker(idx);
+      }
+    });
+
+    // Picker overlay buttons
+    qs('#btn-picker-random')?.addEventListener('click', () => this.showStudentPicker(-1));
+    qs('#btn-picker-close')?.addEventListener('click', () => this.closeStudentPicker());
+    qs('#student-picker-overlay')?.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).id === 'student-picker-overlay' ||
+          (e.target as HTMLElement).classList.contains('picker-backdrop')) {
+        this.closeStudentPicker();
+      }
     });
   },
 
@@ -770,5 +823,98 @@ export const TeacherView = {
       console.error('loadDraft error:', e);
       showToast('❌ Lỗi tải bài học: ' + e.message, 'error');
     }
+  },
+
+  parseAndSaveRoster() {
+    const rosterInput = qs<HTMLTextAreaElement>('#student-roster-input');
+    if (!rosterInput) return;
+    const students = rosterInput.value.split('\n').map(s => s.trim()).filter(s => s !== '');
+    AppState.updateConfig({ students });
+    this.updateRosterCount();
+    StorageService.saveTeacherState();
+  },
+
+  updateRosterCount() {
+    const students = AppState.get().config.students || [];
+    const countEl = qs('#roster-count');
+    if (countEl) countEl.textContent = `${students.length} học sinh`;
+  },
+
+  showStudentPicker(idx: number) {
+    const students = AppState.get().config.students || [];
+    if (students.length === 0) {
+      showToast('Vui lòng nhập danh sách học sinh ở Bước 1!', 'error');
+      this.showStep(1);
+      qs('#roster-body')?.classList.remove('hidden');
+      qs('#student-roster-input')?.focus();
+      return;
+    }
+
+    let finalIdx = idx;
+    if (idx === -1) {
+      // Random pick with animation
+      this.animateRandomPick(students);
+      return;
+    }
+
+    if (idx >= students.length) {
+      showToast(`Chỉ có ${students.length} học sinh trong danh sách.`, '');
+      return;
+    }
+
+    this.displayStudent(finalIdx, students[finalIdx]);
+  },
+
+  animateRandomPick(students: string[]) {
+    const overlay = qs('#student-picker-overlay');
+    const nameEl = qs('#picker-name');
+    const numEl = qs('#picker-number');
+    const labelEl = qs('#picker-label');
+    const card = qs('#picker-card');
+    
+    if (!overlay || !nameEl || !numEl || !card) return;
+
+    overlay.classList.remove('hidden');
+    labelEl!.textContent = 'Đang chọn...';
+    numEl.textContent = '🎲';
+    card.classList.add('picker-rolling');
+
+    let count = 0;
+    const maxSpin = 15;
+    const interval = setInterval(() => {
+      const randIdx = Math.floor(Math.random() * students.length);
+      nameEl.textContent = students[randIdx];
+      count++;
+      if (count >= maxSpin) {
+        clearInterval(interval);
+        card.classList.remove('picker-rolling');
+        const finalIdx = Math.floor(Math.random() * students.length);
+        this.displayStudent(finalIdx, students[finalIdx]);
+      }
+    }, 80);
+  },
+
+  displayStudent(idx: number, name: string) {
+    const overlay = qs('#student-picker-overlay');
+    const nameEl = qs('#picker-name');
+    const numEl = qs('#picker-number');
+    const labelEl = qs('#picker-label');
+    const card = qs('#picker-card');
+
+    if (!overlay || !nameEl || !numEl || !labelEl || !card) return;
+
+    overlay.classList.remove('hidden');
+    labelEl.textContent = 'Học sinh số';
+    numEl.textContent = (idx + 1).toString();
+    nameEl.textContent = name;
+    
+    card.classList.add('picker-pop');
+    setTimeout(() => card.classList.remove('picker-pop'), 500);
+    
+    confetti();
+  },
+
+  closeStudentPicker() {
+    qs('#student-picker-overlay')?.classList.add('hidden');
   }
 };
