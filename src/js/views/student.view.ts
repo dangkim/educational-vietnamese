@@ -175,7 +175,6 @@ export const StudentView = {
     const next = s.currentSection + 1;
     if (next < sections.length) {
       this.showSection(next);
-      showToast(`✅ Hoàn thành! Chuyển sang "${sections[next].name}"`, 'success');
     } else {
       this.showActivities();
       showToast('🎉 Đã xem xong tất cả phần! Đến phần bài tập nhé!', 'success');

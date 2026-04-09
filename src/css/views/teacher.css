@@ -90,7 +90,7 @@ textarea.form-input { resize: vertical; min-height: 120px; }
 .generate-area { text-align: center; padding: 20px 0; }
 .btn-generate {
   background: linear-gradient(135deg,#7E57C2,#E91E63); color: white;
-  padding: 16px 40px; border-radius: 50px; font-family: 'Fredoka One',cursive; font-size: 1.3rem;
+  padding: 16px 40px; border-radius: 50px; font-family: var(--font-header); font-size: 1.3rem;
   letter-spacing: .5px; box-shadow: 0 8px 24px rgba(126,87,194,.4);
   transition: transform var(--trans), box-shadow var(--trans);
 }
@@ -121,7 +121,7 @@ textarea.form-input { resize: vertical; min-height: 120px; }
 .btn-publish {
   background: linear-gradient(135deg,var(--mint),#00897B); color: white;
   padding: 14px 32px; border-radius: 12px; font-weight: 800; font-size: 1rem;
-  box-shadow: 0 4px 16px rgba(67,160,71,.3); transition: all var(--trans); font-family:'Fredoka One',cursive; font-size: 1.2rem;
+  box-shadow: 0 4px 16px rgba(67,160,71,.3); transition: all var(--trans); font-family: var(--font-header); font-size: 1.2rem;
 }
 .btn-publish:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(67,160,71,.4); }
 
@@ -238,7 +238,7 @@ textarea.form-input { resize: vertical; min-height: 120px; }
   margin-bottom: 8px;
 }
 .picker-number {
-  font-family: 'Fredoka', cursive;
+  font-family: var(--font-header);
   font-size: 4rem;
   font-weight: 800;
   color: var(--purple);
@@ -247,7 +247,7 @@ textarea.form-input { resize: vertical; min-height: 120px; }
   text-shadow: 0 4px 12px rgba(126,87,194,0.2);
 }
 .picker-name {
-  font-family: 'Fredoka', cursive;
+  font-family: var(--font-header);
   font-size: 2.8rem;
   font-weight: 700;
   color: var(--dark);

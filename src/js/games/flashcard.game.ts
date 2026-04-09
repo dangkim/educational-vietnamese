@@ -24,11 +24,11 @@ export const FlashcardGame = {
           <div class="flashcard-wrap" id="fc-wrap">
             <div class="flashcard" id="fc-card">
               <div class="flashcard-face flashcard-front">
-                <p style="font-size:.8rem;opacity:.7;margin-bottom:8px">📌 THUẬT NGỮ</p>
+                <p class="flashcard-label">📌 THUẬT NGỮ</p>
                 <h3 id="fc-term"></h3>
               </div>
               <div class="flashcard-face flashcard-back">
-                <p style="font-size:.8rem;opacity:.7;margin-bottom:8px">💡 GIẢI THÍCH</p>
+                <p class="flashcard-label">💡 GIẢI THÍCH</p>
                 <p id="fc-def"></p>
               </div>
             </div>

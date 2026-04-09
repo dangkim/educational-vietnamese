@@ -6,7 +6,7 @@
   background-size: 400% 400%; animation: gradientBG 8s ease infinite;
 }
 .home-hero { text-align: center; margin-bottom: 40px; animation: fadeIn .6s ease; }
-.home-logo { font-family: 'Fredoka One',cursive; font-size: clamp(2.5rem,8vw,4.5rem); 
+.home-logo { font-family: var(--font-header); font-size: clamp(2.5rem,8vw,4.5rem); 
   background: linear-gradient(135deg,#1A237E,#7E57C2,#E91E63); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .home-tagline { font-size: 1.15rem; color: var(--muted); margin-top: 8px; font-weight: 600; }
 .home-decorations { display:flex; gap: 20px; justify-content: center; margin: 20px 0; font-size: 2.5rem; }
@@ -24,5 +24,5 @@
 .home-card.teacher-card { background: linear-gradient(135deg,#FF6F00,#FFB300); color: white; animation-delay: .1s; }
 .home-card.student-card { background: linear-gradient(135deg,#1565C0,#00ACC1); color: white; animation-delay: .2s; }
 .home-card-icon { font-size: 3rem; margin-bottom: 12px; }
-.home-card h2 { font-family:'Fredoka One',cursive; font-size: 1.6rem; margin-bottom: 8px; }
+.home-card h2 { font-family: var(--font-header); font-size: 1.6rem; margin-bottom: 8px; }
 .home-card p { font-size: .9rem; opacity: .9; font-weight: 600; }

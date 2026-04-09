@@ -74,7 +74,7 @@
 .game-btn.active::before { opacity: 1; }
 .game-btn-content { position: relative; z-index: 1; }
 .game-icon { font-size: 2.5rem; margin-bottom: 8px; }
-.game-label { font-family:'Fredoka One',cursive; font-size: 1rem; color: var(--dark); }
+.game-label { font-family: var(--font-header); font-size: 1rem; color: var(--dark); }
 .game-sub { font-size: .78rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
 .game-badge { position: absolute; top: 10px; right: 10px; background: var(--mint); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: .75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 
@@ -89,7 +89,7 @@
 .submit-row { display: flex; justify-content: center; gap: 16px; margin-top: 32px; flex-wrap: wrap; }
 .btn-submit {
   background: linear-gradient(135deg,#E91E63,#C2185B); color: white;
-  padding: 16px 36px; border-radius: 50px; font-family:'Fredoka One',cursive; font-size: 1.2rem;
+  padding: 16px 36px; border-radius: 50px; font-family: var(--font-header); font-size: 1.2rem;
   box-shadow: 0 6px 20px rgba(233,30,99,.35); transition: all var(--trans);
 }
 .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(233,30,99,.45); }

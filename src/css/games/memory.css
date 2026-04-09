@@ -9,7 +9,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
   border: 1.5px solid rgba(0,0,0,.04);
 }
-.memory-stat-num { font-family:'Fredoka One',cursive; font-size: 1.5rem; color: var(--dark); }
+.memory-stat-num { font-family: var(--font-header); font-size: 1.5rem; color: var(--dark); }
 .memory-stat-label { font-size: .78rem; font-weight: 700; color: var(--muted); }
 .memory-grid { display: grid; gap: 14px; width: 100%; max-width: 640px; margin: 0 auto; }
 
@@ -79,7 +79,7 @@
   align-items: center;
   justify-content: center;
   color: white;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-header);
   font-size: 1.8rem;
   text-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
