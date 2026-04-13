@@ -1,0 +1,16 @@
+{
+  "name": "EduPlay — Lớp Học Vui Vẻ",
+  "short_name": "EduPlay",
+  "description": "Nền tảng học tập tương tác với 5 dạng game cho học sinh tiểu học",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0F4FF",
+  "theme_color": "#1A237E",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+  ],
+  "categories": ["education", "games"],
+  "lang": "vi"
+}
